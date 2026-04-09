@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Campus Watchdog Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #060a17;
+      --card: rgba(12, 18, 42, 0.7);
+      --text: #e8eeff;
+      --muted: #8a96c0;
+      --line: rgba(255,255,255,0.07);
+      --line2: rgba(255,255,255,0.13);
+      --accent: #6c7fff;
+      --accent2: #0fd6cc;
+      --success: #0fd68a;
+      --warn: #ffaa38;
+      --danger: #ff4d72;
+      --shadow: 0 24px 60px rgba(0,0,0,0.45);
+      --font-head: 'Syne', sans-serif;
+      --font-mono: 'Space Mono', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { min-height: 100%; font-family: var(--font-head); background: #060a17; color: var(--text); overflow-x: hidden; }
+    body::before {
+      content: ''; position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 10% 10%, rgba(60,80,255,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 90% 85%, rgba(15,214,204,0.12) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 50% at 55% 50%, rgba(108,127,255,0.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    body::after {
+      content: ''; position: fixed; inset: 0; z-index: 0;
+      background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+      background-size: 40px 40px; pointer-events: none;
+    }
+
+    .app-shell { position: relative; z-index: 2; max-width: 1280px; margin: 0 auto; padding: 24px 20px 40px; }
+    .glass { background: var(--card); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); }
+    .topbar { backdrop-filter: blur(18px); padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; border-radius: 16px; }
+    .topbar-brand p.eyebrow { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent2); margin-bottom: 4px; }
+    .topbar-brand h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em; background: linear-gradient(100deg, #fff 30%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .topbar-brand .subtitle { font-size: 0.82rem; color: var(--muted); margin-top: 2px; }
+    .topbar-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+    .conn-badge { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line2); border-radius: 999px; padding: 7px 14px; font-size: 0.82rem; font-family: var(--font-mono); background: rgba(255,255,255,0.03); }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--warn); box-shadow: 0 0 0 5px rgba(255,170,56,0.15); }
+    .conn-badge.ok .dot { background: var(--success); box-shadow: 0 0 0 5px rgba(15,214,138,0.15); }
+
+    .btn-history { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.05); border: 1px solid var(--line2); color: var(--text); border-radius: 10px; padding: 9px 14px; font-family: var(--font-head); font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+    .btn-history:hover { background: rgba(255,255,255,0.1); }
+    .history-count { background: var(--accent); color: #fff; font-size: 0.7rem; font-weight: 700; border-radius: 999px; padding: 1px 7px; min-width: 20px; text-align: center; }
+
+    .btn-trigger { display: inline-flex; align-items: center; border: 0; border-radius: 12px; background: linear-gradient(115deg, var(--accent), var(--accent2)); color: #fff; font-family: var(--font-head); font-weight: 700; font-size: 0.88rem; cursor: pointer; overflow: hidden; }
+    .btn-trigger-main { padding: 10px 18px; border: 0; background: none; color: #fff; font-family: inherit; font-weight: 700; font-size: inherit; cursor: pointer; display: flex; align-items: center; gap: 7px; }
+    .btn-trigger-main:hover { opacity: 0.88; }
+
+    /* History dropdown */
+    .dropdown-panel { display: none; position: fixed; z-index: 2147483647; min-width: 220px; background: #111829; border: 1px solid var(--line2); border-radius: 14px; box-shadow: 0 20px 60px rgba(0,0,0,0.85), 0 0 0 1px rgba(108,127,255,0.18); overflow: hidden; animation: dropDown 0.18s cubic-bezier(.22,1,.36,1); }
+    .dropdown-panel.open { display: block; }
+    @keyframes dropDown { from { opacity:0; transform: translateY(-8px) scale(0.97); } to { opacity:1; transform: none; } }
+    .history-panel { min-width: 300px; max-height: 380px; overflow-y: auto; }
+    .history-empty { padding: 20px 16px; text-align: center; color: var(--muted); font-size: 0.85rem; }
+    .history-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--line); cursor: pointer; transition: background 0.12s; color: var(--text); }
+    .history-item:last-child { border-bottom: none; }
+    .history-item:hover { background: rgba(255,255,255,0.05); }
+    .hi-bar { width: 3px; border-radius: 3px; align-self: stretch; min-height: 32px; flex-shrink: 0; }
+    .hi-bar.high { background: var(--danger); } .hi-bar.medium { background: var(--warn); } .hi-bar.low { background: var(--success); }
+    .hi-info { flex: 1; min-width: 0; }
+    .hi-title { font-size: 0.84rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .hi-meta { font-size: 0.74rem; color: var(--muted); margin-top: 3px; font-family: var(--font-mono); }
+    .hi-time { font-size: 0.72rem; color: var(--muted); font-family: var(--font-mono); flex-shrink: 0; }
+
+    /* Grid */
+    .dashboard-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
+    .panel { padding: 16px; }
+    .col8 { grid-column: span 8; } .col4 { grid-column: span 4; }
+    .panel-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .panel-head h2 { font-size: 0.98rem; font-weight: 700; }
+    .chip { font-size: 0.72rem; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(108,127,255,0.4); color: #b5bdff; font-family: var(--font-mono); }
+    .chip.neutral { border-color: var(--line2); color: var(--muted); }
+    .chip.danger { border-color: rgba(255,77,114,0.45); color: #ff9db5; }
+
+    .video-box { position: relative; border: 1px dashed rgba(255,255,255,0.18); border-radius: 12px; min-height: 230px; overflow: hidden; background: linear-gradient(135deg, rgba(108,127,255,0.07), rgba(15,214,204,0.07)); display: grid; place-content: center; }
+    .scan-line { position: absolute; left: 0; right: 0; height: 2px; top: 0; background: linear-gradient(90deg, transparent, rgba(15,214,204,0.8), transparent); animation: scan 3s linear infinite; }
+    @keyframes scan { 0%{top:0;opacity:.2} 50%{opacity:1} 100%{top:100%;opacity:.2} }
+    #camera { width: 100%; border-radius: 10px; display: block; }
+    .cam-unavail { color: var(--muted); font-size: 0.82rem; padding: 20px; text-align: center; z-index: 2; position: relative; }
+
+    .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .metric-card { background: rgba(255,255,255,0.03); border: 1px solid var(--line); border-radius: 12px; padding: 14px 12px; text-align: center; }
+    .metric-val { font-size: 1.8rem; font-weight: 800; font-family: var(--font-mono); line-height: 1; }
+    .metric-val.danger-val { color: var(--danger); }
+    .metric-label { font-size: 0.75rem; color: var(--muted); margin-top: 6px; }
+
+    .zone-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .zone-card { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; background: rgba(255,255,255,0.025); transition: border-color 0.3s, transform 0.2s; }
+    .zone-card.full { grid-column: span 2; }
+    .zone-card h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 5px; }
+    .zone-status { font-size: 0.78rem; font-family: var(--font-mono); }
+    .zone-card.warn { border-color: rgba(255,170,56,0.55); }
+    .zone-card.critical { border-color: rgba(255,77,114,0.6); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,77,114,0.12); }
+
+    .alert-list-wrap { max-height: 340px; overflow-y: auto; display: flex; flex-direction: column; gap: 9px; padding-right: 2px; }
+    .alert-list-wrap::-webkit-scrollbar { width: 4px; }
+    .alert-list-wrap::-webkit-scrollbar-thumb { background: var(--line2); border-radius: 4px; }
+    .alert-card { border: 1px solid var(--line); border-left: 3px solid #6f80ff; border-radius: 11px; padding: 11px 13px; background: rgba(255,255,255,0.025); cursor: pointer; transition: background 0.15s, transform 0.15s; }
+    .alert-card:hover { background: rgba(255,255,255,0.06); transform: translateX(3px); }
+    .alert-card.high { border-left-color: var(--danger); } .alert-card.medium { border-left-color: var(--warn); } .alert-card.low { border-left-color: var(--success); }
+    .ac-top { display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; }
+    .ac-title { font-weight: 700; font-size: 0.9rem; flex: 1; }
+    .ac-time { font-size: 0.74rem; color: var(--muted); font-family: var(--font-mono); white-space: nowrap; }
+    .ac-meta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 7px; font-size: 0.8rem; color: #a0b0e0; }
+    .ac-hint { font-size: 0.7rem; color: var(--accent); margin-top: 5px; opacity: 0.65; }
+    .empty-state { border: 1px dashed var(--line); border-radius: 11px; text-align: center; padding: 24px 12px; color: var(--muted); font-size: 0.85rem; }
+    .empty-state strong { display: block; color: var(--text); font-size: 0.95rem; margin-bottom: 5px; }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       SHARED MODAL OVERLAY
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    .modal-overlay { display: none; position: fixed; inset: 0; z-index: 9000; background: rgba(4,7,18,0.85); backdrop-filter: blur(10px); align-items: center; justify-content: center; }
+    .modal-overlay.active { display: flex; }
+    @keyframes popIn { from{transform:scale(.9) translateY(20px);opacity:0} to{transform:none;opacity:1} }
+
+    .modal-close-x { position: absolute; top: 14px; right: 16px; background: rgba(255,255,255,0.05); border: 1px solid var(--line); color: var(--muted); border-radius: 8px; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.95rem; transition: background 0.15s; }
+    .modal-close-x:hover { background: rgba(255,255,255,0.12); color: var(--text); }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       CONFIGURATOR MODAL
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    .config-modal {
+      background: #0c1128;
+      border: 1px solid rgba(108,127,255,0.3);
+      border-radius: 22px;
+      box-shadow: 0 40px 100px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.06);
+      width: min(520px, 95vw);
+      padding: 28px;
+      position: relative;
+      animation: popIn 0.22s cubic-bezier(.22,1,.36,1);
+    }
+    .config-modal-eyebrow { font-family: var(--font-mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent2); margin-bottom: 6px; }
+    .config-modal-title { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.01em; }
+    .config-modal-sub { font-size: 0.82rem; color: var(--muted); margin-top: 4px; margin-bottom: 22px; }
+
+    /* 2×2 grid of dropdowns */
+    .config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+    .config-field { display: flex; flex-direction: column; gap: 6px; }
+    .config-label { font-family: var(--font-mono); font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+
+    /* Styled select */
+    .cfg-select {
+      appearance: none; -webkit-appearance: none;
+      width: 100%; padding: 11px 34px 11px 13px;
+      background: rgba(255,255,255,0.055);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 11px; color: var(--text);
+      font-family: var(--font-head); font-size: 0.88rem; font-weight: 600;
+      cursor: pointer; outline: none;
+      transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a96c0' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+    }
+    .cfg-select:hover { border-color: rgba(108,127,255,0.5); background-color: rgba(108,127,255,0.07); }
+    .cfg-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(108,127,255,0.2); }
+    .cfg-select option { background: #111829; color: var(--text); font-weight: 500; padding: 6px; }
+    /* Severity colour accent */
+    .cfg-select.sev-high   { border-color: rgba(255,77,114,0.55);  color: #ff9db5; }
+    .cfg-select.sev-medium { border-color: rgba(255,170,56,0.55);  color: #ffcc7a; }
+    .cfg-select.sev-low    { border-color: rgba(15,214,138,0.55);  color: #0fd68a; }
+
+    .config-fire-btn { width: 100%; padding: 14px; border: 0; border-radius: 12px; background: linear-gradient(115deg, var(--accent), var(--accent2)); color: #fff; font-family: var(--font-head); font-weight: 800; font-size: 1rem; cursor: pointer; transition: opacity 0.15s, transform 0.1s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .config-fire-btn:hover { opacity: 0.88; }
+    .config-fire-btn:active { transform: scale(0.98); }
+    .config-cancel { display: block; text-align: center; margin-top: 10px; font-size: 0.78rem; color: var(--muted); cursor: pointer; font-family: var(--font-mono); background: none; border: none; width: 100%; padding: 6px; transition: color 0.15s; }
+    .config-cancel:hover { color: var(--text); }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       ALERT DETAIL MODAL
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    .detail-modal { background: #0c1128; border: 1px solid rgba(108,127,255,0.28); border-radius: 20px; box-shadow: 0 32px 90px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.05); width: min(540px, 95vw); padding: 26px; position: relative; animation: popIn 0.2s cubic-bezier(.22,1,.36,1); }
+    .modal-sev-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; }
+    .modal-sev-badge.high { background: rgba(255,77,114,0.15); color: #ff7090; border: 1px solid rgba(255,77,114,0.35); }
+    .modal-sev-badge.medium { background: rgba(255,170,56,0.15); color: #ffba5e; border: 1px solid rgba(255,170,56,0.35); }
+    .modal-sev-badge.low { background: rgba(15,214,138,0.15); color: #0fd68a; border: 1px solid rgba(15,214,138,0.35); }
+    .modal-title { font-size: 1.25rem; font-weight: 800; margin: 0 32px 16px 0; line-height: 1.3; }
+    .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 10px; }
+    .modal-field { background: rgba(255,255,255,0.035); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+    .modal-field label { display: block; font-size: 0.68rem; font-family: var(--font-mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.09em; margin-bottom: 4px; }
+    .modal-field span { font-size: 0.92rem; font-weight: 600; }
+    .modal-route-box { background: rgba(255,255,255,0.035); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; }
+    .modal-route-box label { display: block; font-size: 0.68rem; font-family: var(--font-mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.09em; margin-bottom: 8px; }
+    .route-tags { display: flex; gap: 7px; flex-wrap: wrap; }
+    .route-tag { background: rgba(108,127,255,0.13); border: 1px solid rgba(108,127,255,0.3); color: #b5bdff; border-radius: 999px; padding: 4px 12px; font-size: 0.78rem; font-weight: 600; }
+    .modal-footer { border-top: 1px solid var(--line); padding-top: 12px; }
+    .modal-timestamp { font-size: 0.78rem; color: var(--muted); font-family: var(--font-mono); margin-bottom: 12px; }
+    .modal-actions { display: flex; gap: 9px; }
+    .btn-ack { background: rgba(255,77,114,0.14); border: 1px solid rgba(255,77,114,0.38); color: #ff7090; border-radius: 10px; padding: 8px 16px; font-family: var(--font-head); font-size: 0.84rem; font-weight: 700; cursor: pointer; transition: background 0.15s; }
+    .btn-ack:hover { background: rgba(255,77,114,0.26); }
+    .btn-sec { background: rgba(255,255,255,0.05); border: 1px solid var(--line); color: var(--text); border-radius: 10px; padding: 8px 14px; font-family: var(--font-head); font-size: 0.84rem; cursor: pointer; transition: background 0.15s; }
+    .btn-sec:hover { background: rgba(255,255,255,0.1); }
+
+    @keyframes alertPulse { 0%{box-shadow:0 0 0 0 rgba(255,77,114,.5)} 70%{box-shadow:0 0 0 10px rgba(255,77,114,0)} 100%{box-shadow:0 0 0 0 rgba(255,77,114,0)} }
+    .pulse { animation: alertPulse 1s ease 2; }
+
+    @media (max-width: 980px) {
+      .col8, .col4 { grid-column: span 12; }
+      .modal-grid, .config-grid { grid-template-columns: 1fr; }
+    }
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   LIVE ALERT POPUP (toast notification)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+#alert-popup {
+  position: fixed; top: 24px; right: 24px; z-index: 99999;
+  width: 340px; max-width: calc(100vw - 48px);
+  background: #0c1128;
+  border: 1px solid rgba(108,127,255,0.3);
+  border-radius: 18px;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(108,127,255,0.12);
+  padding: 18px 20px;
+  transform: translateX(calc(100% + 40px));
+  opacity: 0;
+  transition: transform 0.38s cubic-bezier(.22,1,.36,1), opacity 0.3s ease;
+  pointer-events: none;
+}
+#alert-popup.show {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+.popup-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+.popup-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px; border-radius: 999px; font-family: var(--font-mono); font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
+.popup-badge.high    { background: rgba(255,77,114,0.15); color: #ff7090; border: 1px solid rgba(255,77,114,0.35); }
+.popup-badge.medium  { background: rgba(255,170,56,0.15); color: #ffba5e; border: 1px solid rgba(255,170,56,0.35); }
+.popup-badge.low     { background: rgba(15,214,138,0.15); color: #0fd68a; border: 1px solid rgba(15,214,138,0.35); }
+.popup-badge.critical{ background: rgba(255,77,114,0.2);  color: #ff4d72; border: 1px solid rgba(255,77,114,0.5); }
+.popup-close { background: rgba(255,255,255,0.05); border: 1px solid var(--line); color: var(--muted); border-radius: 7px; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.85rem; flex-shrink: 0; transition: background 0.15s; }
+.popup-close:hover { background: rgba(255,255,255,0.12); color: var(--text); }
+.popup-title { font-size: 1rem; font-weight: 800; margin-bottom: 6px; line-height: 1.3; }
+.popup-meta { font-size: 0.8rem; color: #a0b0e0; display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.popup-meta span { display: flex; align-items: center; gap: 4px; }
+.popup-route { font-size: 0.75rem; color: var(--muted); font-family: var(--font-mono); margin-bottom: 14px; }
+.popup-route strong { color: #b5bdff; }
+.popup-actions { display: flex; gap: 8px; }
+.popup-btn-ack { flex: 1; padding: 9px; border: 0; border-radius: 10px; background: linear-gradient(115deg, var(--accent), var(--accent2)); color: #fff; font-family: var(--font-head); font-weight: 700; font-size: 0.82rem; cursor: pointer; transition: opacity 0.15s; }
+.popup-btn-ack:hover { opacity: 0.85; }
+.popup-btn-view { padding: 9px 14px; background: rgba(255,255,255,0.05); border: 1px solid var(--line2); color: var(--text); border-radius: 10px; font-family: var(--font-head); font-size: 0.82rem; cursor: pointer; transition: background 0.15s; }
+.popup-btn-view:hover { background: rgba(255,255,255,0.1); }
+.popup-progress { height: 3px; border-radius: 3px; background: rgba(255,255,255,0.08); margin-top: 14px; overflow: hidden; }
+.popup-progress-bar { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2)); width: 100%; transition: width linear; }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+
+  <header class="topbar glass">
+    <div class="topbar-brand">
+      <p class="eyebrow">Unitedworld Institute of Technology</p>
+      <h1>AI Campus Watchdog</h1>
+      <p class="subtitle">Smart Campus Security Operations Center</p>
+    </div>
+    <div class="topbar-right">
+      <div class="conn-badge" id="connBadge"><span class="dot"></span><span id="connText">Connecting...</span></div>
+      <button class="btn-history" id="historyBtn">📄 Alert History <span class="history-count" id="historyCount">0</span></button>
+      <button class="btn-trigger" id="openConfigBtn"><span class="btn-trigger-main">⚡ Trigger Demo Alert</span></button>
+    </div>
+  </header>
+
+  <main class="dashboard-grid">
+
+    <section class="panel glass col8">
+      <div class="panel-head"><h2>📷 Live Security Feed</h2><span class="chip">Demo Ready</span></div>
+      <div class="video-box" id="videoBox">
+        <div class="scan-line"></div>
+        <video id="camera" autoplay playsinline></video>
+      </div>
+    </section>
+
+    <div class="col4" style="display:flex;flex-direction:column;gap:16px;">
+      <section class="panel glass" style="padding:16px;">
+        <div class="panel-head"><h2>📈 System Pulse</h2><span class="chip neutral" id="lastRefresh">Waiting...</span></div>
+        <div class="metrics-grid">
+          <div class="metric-card"><div class="metric-val" id="metricTotal">0</div><div class="metric-label">Total Alerts</div></div>
+          <div class="metric-card"><div class="metric-val danger-val" id="metricCritical">0</div><div class="metric-label">Critical</div></div>
+          <div class="metric-card"><div class="metric-val" id="metricZones">5</div><div class="metric-label">Zones</div></div>
+        </div>
+      </section>
+      <section class="panel glass" style="padding:16px;">
+        <div class="panel-head"><h2>📍 Campus Zones</h2><span class="chip">Real-time</span></div>
+        <div class="zone-grid" id="zoneGrid">
+          <article class="zone-card" data-zone="Main Gate"><h3>🏛 Main Gate</h3><p class="zone-status">🟢 Normal</p></article>
+          <article class="zone-card" data-zone="AI Lab"><h3>🤖 AI Lab</h3><p class="zone-status">🟢 Normal</p></article>
+          <article class="zone-card" data-zone="Anticlock"><h3>🕰 Anticlock</h3><p class="zone-status">🟢 Normal</p></article>
+          <article class="zone-card" data-zone="KSD"><h3>🏫 KSD</h3><p class="zone-status">🟢 Normal</p></article>
+          <article class="zone-card full" data-zone="Container"><h3>📦 Container</h3><p class="zone-status">🟢 Normal</p></article>
+        </div>
+      </section>
+    </div>
+
+    <!-- Alert Command Center — no bottom control panel -->
+    <section class="panel glass col8">
+      <div class="panel-head"><h2>🚨 Alert Command Center</h2><span class="chip danger" id="activeCount">0 Active</span></div>
+      <div class="alert-list-wrap" id="alertList">
+        <div class="empty-state">
+          <strong>No active alerts</strong>
+          Click ⚡ Trigger Demo Alert above to simulate an alert event.
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- History Dropdown -->
+<div class="dropdown-panel history-panel" id="historyPanel">
+  <div style="padding:10px 14px 6px;border-bottom:1px solid var(--line);">
+    <span style="font-family:var(--font-mono);font-size:0.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);">Recent Alert History</span>
+  </div>
+  <div id="historyList"><div class="history-empty">No alerts recorded yet.</div></div>
+  <div style="padding:8px 14px;border-top:1px solid var(--line);">
+    <button onclick="clearHistory()" style="background:none;border:none;color:var(--muted);font-size:0.75rem;cursor:pointer;font-family:var(--font-mono);">✕ Clear History</button>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     CONFIGURATOR MODAL — dropdowns inside the popup
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="modal-overlay" id="configModal">
+  <div class="config-modal">
+    <button class="modal-close-x" id="configClose">✕</button>
+
+    <div class="config-modal-eyebrow">⚡ Alert Simulator</div>
+    <div class="config-modal-title">Configure &amp; Fire Alert</div>
+    <div class="config-modal-sub">Select options below, then hit Fire — or leave any blank for a random pick.</div>
+
+    <div class="config-grid">
+
+      <div class="config-field">
+        <label class="config-label">📍 Zone</label>
+        <select class="cfg-select" id="cfgZone">
+          <option value="">🎲 Random Zone</option>
+          <option value="Main Gate">🏛 Main Gate</option>
+          <option value="AI Lab">🤖 AI Lab</option>
+          <option value="Anticlock">🕰 Anticlock</option>
+          <option value="KSD">🏫 KSD</option>
+          <option value="Container">📦 Container</option>
+        </select>
+      </div>
+
+      <div class="config-field">
+        <label class="config-label">⚠ Severity</label>
+        <select class="cfg-select" id="cfgSeverity">
+          <option value="">🎲 Random Severity</option>
+          <option value="high">🔴 Critical / High</option>
+          <option value="medium">🟡 Medium</option>
+          <option value="low">🟢 Low</option>
+        </select>
+      </div>
+
+      <div class="config-field">
+        <label class="config-label">🔍 Alert Type</label>
+        <select class="cfg-select" id="cfgType">
+          <option value="">🎲 Random Type</option>
+          <option value="crowd">👥 Crowd Threshold</option>
+          <option value="restricted">🚫 Restricted Zone Breach</option>
+          <option value="distress">🆘 Student Distress</option>
+          <option value="suspicious">👁 Suspicious Activity</option>
+          <option value="unauthorized">🔓 Unauthorized Access</option>
+          <option value="loitering">🚶 Loitering</option>
+          <option value="tailgating">🚪 Tailgating</option>
+        </select>
+      </div>
+
+      <div class="config-field">
+        <label class="config-label">→ Route To</label>
+        <select class="cfg-select" id="cfgRoute">
+          <option value="">🎲 Auto Route</option>
+          <option value="Security">🛡 Security</option>
+          <option value="HOD">🎓 HOD</option>
+          <option value="Nearest Faculty">👨‍🏫 Nearest Faculty</option>
+          <option value="Admin">🏢 Admin</option>
+          <option value="Security,HOD">🛡 Security + HOD</option>
+          <option value="Security,Admin">🛡 Security + Admin</option>
+          <option value="Security,HOD,Admin">🔔 All — Security + HOD + Admin</option>
+        </select>
+      </div>
+
+    </div>
+
+    <button class="config-fire-btn" id="configFireBtn">⚡ Fire Alert Now</button>
+    <button class="config-cancel" id="configCancel">Cancel</button>
+  </div>
+</div>
+
+<!-- Alert Detail Modal -->
+<div class="modal-overlay" id="alertModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="detail-modal">
+    <button class="modal-close-x" id="modalClose">✕</button>
+    <div id="modalSevBadge" class="modal-sev-badge high">
+      <span style="width:7px;height:7px;border-radius:50%;background:currentColor;display:inline-block;"></span>
+      <span id="modalSevText">HIGH</span>
+    </div>
+    <h2 class="modal-title" id="modalTitle">Alert</h2>
+    <div class="modal-grid">
+      <div class="modal-field"><label>📍 Zone</label><span id="mZone">—</span></div>
+      <div class="modal-field"><label>⚠ Severity</label><span id="mSev">—</span></div>
+      <div class="modal-field"><label>🔍 Type</label><span id="mType">—</span></div>
+      <div class="modal-field"><label>🕰 Time</label><span id="mTime">—</span></div>
+    </div>
+    <div class="modal-route-box">
+      <label>→ Routed To</label>
+      <div class="route-tags" id="mRoutes"></div>
+    </div>
+    <div class="modal-footer">
+      <div class="modal-timestamp" id="mTimestamp">—</div>
+      <div class="modal-actions">
+        <button class="btn-ack" id="modalAck">✓ Acknowledge &amp; Dismiss</button>
+        <button class="btn-sec" id="modalClose2">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_BASE = "http://10.86.122.254:5000";
+const POLL_MS = 1500;
+const ZONES = ["Main Gate","AI Lab","Anticlock","KSD","Container"];
+const TYPE_MAP = {
+  crowd:        { title:"Crowd threshold exceeded",          severity:"medium", routes:["Security","Admin"] },
+  restricted:   { title:"Restricted zone breach detected",   severity:"high",   routes:["Security","HOD"] },
+  distress:     { title:"Student distress gesture detected", severity:"high",   routes:["Nearest Faculty","Security"] },
+  suspicious:   { title:"Suspicious activity flagged",       severity:"medium", routes:["Security"] },
+  unauthorized: { title:"Unauthorized access attempt",       severity:"high",   routes:["Security","Admin","HOD"] },
+  loitering:    { title:"Loitering detected after hours",    severity:"low",    routes:["Security"] },
+  tailgating:   { title:"Tailgating event at entry point",   severity:"medium", routes:["Security"] },
+};
+const TYPE_KEYS = Object.keys(TYPE_MAP);
+const state = { alerts: [], history: [], fallback: false };
+let currentAlert = null;
+const $ = id => document.getElementById(id);
+const fmt = ts => new Date(ts).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",second:"2-digit"});
+const fmtFull = ts => { const d=new Date(ts); return d.toLocaleDateString()+" at "+d.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}); };
+const readable = s => String(s||"").replaceAll("_"," ").replace(/\b\w/g,m=>m.toUpperCase());
+
+// Severity colour tint on the select itself
+$("cfgSeverity").addEventListener("change", function() {
+  this.classList.remove("sev-high","sev-medium","sev-low");
+  if (this.value) this.classList.add("sev-" + this.value);
+});
+
+// ── CONFIGURATOR MODAL ──
+function openConfigModal() {
+  ["cfgZone","cfgSeverity","cfgType","cfgRoute"].forEach(id => $(id).value = "");
+  $("cfgSeverity").classList.remove("sev-high","sev-medium","sev-low");
+  $("configModal").classList.add("active");
+}
+function closeConfigModal() { $("configModal").classList.remove("active"); }
+
+$("openConfigBtn").addEventListener("click", openConfigModal);
+$("configClose").addEventListener("click", closeConfigModal);
+$("configCancel").addEventListener("click", closeConfigModal);
+$("configModal").addEventListener("click", e => { if (e.target === $("configModal")) closeConfigModal(); });
+
+$("configFireBtn").addEventListener("click", () => {
+  const zone    = $("cfgZone").value    || ZONES[Math.floor(Math.random()*ZONES.length)];
+  const typeKey = $("cfgType").value    || TYPE_KEYS[Math.floor(Math.random()*TYPE_KEYS.length)];
+  const severity= $("cfgSeverity").value|| null;
+  const routeVal= $("cfgRoute").value;
+  const routes  = routeVal ? routeVal.split(",") : null;
+  closeConfigModal();
+  setTimeout(() => fireAlert({ zone, typeKey, severity, routes }), 150);
+});
+
+// ── FIRE ALERT ──
+function fireAlert({ zone, typeKey, severity, routes } = {}) {
+  const tk  = typeKey || TYPE_KEYS[Math.floor(Math.random()*TYPE_KEYS.length)];
+  const tpl = TYPE_MAP[tk];
+  const z   = zone     || ZONES[Math.floor(Math.random()*ZONES.length)];
+  const sev = severity || tpl.severity;
+  const rt  = routes   || tpl.routes;
+  const alert = { id:`demo-${Date.now()}`, type:tk, title:tpl.title, zone:z, severity:sev, routed_to:rt, timestamp:new Date().toISOString() };
+  state.alerts  = [alert,...state.alerts].slice(0,12);
+  state.history = [alert,...state.history].slice(0,50);
+  renderAll(state.alerts);
+  renderHistory();
+  setTimeout(() => openDetailModal(alert), 80);
+  setTimeout(() => {
+    const first = $("alertList").querySelector(".alert-card");
+    if (first) { first.classList.add("pulse"); setTimeout(()=>first.classList.remove("pulse"),2200); }
+  }, 60);
+}
+
+// ── HISTORY DROPDOWN ──
+function positionDropdown(panelEl, triggerEl) {
+  panelEl.classList.add("open");
+  requestAnimationFrame(() => {
+    const rect = triggerEl.getBoundingClientRect();
+    const w = panelEl.offsetWidth || 300;
+    let left = rect.right - w;
+    if (left < 8) left = 8;
+    panelEl.style.top  = (rect.bottom + 8) + "px";
+    panelEl.style.left = left + "px";
+    panelEl.style.right = "auto";
+  });
+}
+function closeAllDropdowns() { document.querySelectorAll(".dropdown-panel").forEach(p=>p.classList.remove("open")); }
+document.addEventListener("click", closeAllDropdowns);
+$("historyPanel").addEventListener("click", e => e.stopPropagation());
+$("historyBtn").addEventListener("click", e => {
+  e.stopPropagation();
+  const isOpen = $("historyPanel").classList.contains("open");
+  closeAllDropdowns();
+  if (!isOpen) positionDropdown($("historyPanel"), $("historyBtn"));
+});
+
+function renderHistory() {
+  $("historyCount").textContent = state.history.length;
+  if (!state.history.length) { $("historyList").innerHTML = `<div class="history-empty">No alerts recorded yet.</div>`; return; }
+  $("historyList").innerHTML = state.history.map(a => `
+    <div class="history-item" data-id="${a.id}">
+      <div class="hi-bar ${a.severity}"></div>
+      <div class="hi-info"><div class="hi-title">${a.title}</div><div class="hi-meta">📍 ${a.zone} &nbsp;→ ${a.routed_to.join(", ")}</div></div>
+      <div class="hi-time">${fmt(a.timestamp)}</div>
+    </div>`).join("");
+  $("historyList").querySelectorAll(".history-item").forEach(item => {
+    item.addEventListener("click", e => {
+      e.stopPropagation();
+      const a = state.history.find(x => x.id === item.dataset.id);
+      if (a) { openDetailModal(a); closeAllDropdowns(); }
+    });
+  });
+}
+function clearHistory() { state.history = []; renderHistory(); }
+
+// ── DETAIL MODAL ──
+function openDetailModal(alert) {
+  currentAlert = alert;
+  $("modalSevBadge").className = "modal-sev-badge " + alert.severity;
+  $("modalSevText").textContent = alert.severity.toUpperCase();
+  $("modalTitle").textContent = alert.title;
+  $("mZone").textContent = alert.zone;
+  $("mSev").textContent = readable(alert.severity);
+  $("mType").textContent = readable(alert.type);
+  $("mTime").textContent = fmt(alert.timestamp);
+  $("mTimestamp").textContent = "Detected on " + fmtFull(alert.timestamp);
+  $("mRoutes").innerHTML = alert.routed_to.map(r=>`<span class="route-tag">→ ${r}</span>`).join("");
+  $("alertModal").classList.add("active");
+}
+function closeDetailModal() { $("alertModal").classList.remove("active"); currentAlert = null; }
+$("modalClose").addEventListener("click", closeDetailModal);
+$("modalClose2").addEventListener("click", closeDetailModal);
+$("alertModal").addEventListener("click", e => { if (e.target === $("alertModal")) closeDetailModal(); });
+document.addEventListener("keydown", e => { if (e.key==="Escape") { closeDetailModal(); closeConfigModal(); } });
+$("modalAck").addEventListener("click", () => {
+  if (currentAlert) { state.alerts = state.alerts.filter(a=>a.id!==currentAlert.id); renderAll(state.alerts); closeDetailModal(); }
+});
+
+// ── RENDER ──
+function renderAlerts(alerts) {
+  if (!alerts.length) { $("alertList").innerHTML = `<div class="empty-state"><strong>No active alerts</strong>Campus conditions are currently normal.</div>`; return; }
+  $("alertList").innerHTML = alerts.map(a => `
+    <article class="alert-card ${a.severity}" data-id="${a.id}" tabindex="0">
+      <div class="ac-top"><span class="ac-title">${a.title}</span><span class="ac-time">${fmt(a.timestamp)}</span></div>
+      <div class="ac-meta"><span>📍 ${a.zone}</span><span>⚠ ${a.severity.toUpperCase()}</span><span>→ ${a.routed_to.join(", ")}</span></div>
+      <div class="ac-hint">Click to view full details &rarr;</div>
+    </article>`).join("");
+  $("alertList").querySelectorAll(".alert-card").forEach(card => {
+    const open = () => { const a = state.alerts.find(x=>x.id===card.dataset.id); if(a) openDetailModal(a); };
+    card.addEventListener("click", open);
+    card.addEventListener("keydown", e => { if(e.key==="Enter"||e.key===" ") open(); });
+  });
+}
+function renderMetrics(alerts) {
+  $("metricTotal").textContent = alerts.length;
+  $("metricCritical").textContent = alerts.filter(a=>a.severity==="high").length;
+  $("metricZones").textContent = Math.max(5, new Set(alerts.map(a=>a.zone)).size);
+  $("activeCount").textContent = `${alerts.length} Active`;
+}
+function renderZones(alerts) {
+  const sev = new Map();
+  alerts.forEach(a => {
+    const cur = sev.get(a.zone)||"normal";
+    if (a.severity==="high") sev.set(a.zone,"critical");
+    else if (a.severity==="medium"&&cur!=="critical") sev.set(a.zone,"warn");
+    else if (!sev.has(a.zone)) sev.set(a.zone,"normal");
+  });
+  document.querySelectorAll(".zone-card").forEach(card => {
+    const status = sev.get(card.dataset.zone)||"normal";
+    card.classList.remove("warn","critical");
+    if(status==="warn") card.classList.add("warn");
+    if(status==="critical") card.classList.add("critical");
+    card.querySelector(".zone-status").innerHTML = status==="critical"?"🔴 Critical":status==="warn"?"🟡 Warning":"🟢 Normal";
+  });
+}
+function renderAll(alerts) {
+  renderAlerts(alerts); renderMetrics(alerts); renderZones(alerts);
+  $("lastRefresh").textContent = `Updated ${new Date().toLocaleTimeString()}`;
+}
+function setConn(ok, fallback=false) {
+  $("connBadge").classList.toggle("ok", ok);
+  $("connText").textContent = ok ? (fallback?"Demo Mode (Offline)":"Connected to Flask API") : "Disconnected";
+}
+async function fetchAlerts() {
+  try {
+    const res = await fetch(`${API_BASE}/alerts`);
+    if (!res.ok) throw new Error();
+    const payload = await res.json();
+    const raw = payload.alerts || payload;
+    if (!Array.isArray(raw)) throw new Error();
+    state.alerts = raw.map((a,i) => ({
+      id: a.id||`a${i}-${Date.now()}`, type: a.type||"unknown", title: a.title||readable(a.type||"Alert"),
+      zone: a.zone||ZONES[0], severity: (a.severity||"low").toLowerCase(),
+      routed_to: Array.isArray(a.routed_to)?a.routed_to:["Security"], timestamp: a.timestamp||new Date().toISOString()
+    })).slice(0,12);
+    state.fallback=false; setConn(true,false); renderAll(state.alerts);
+  } catch {
+    if (!state.fallback) { state.fallback=true; setConn(true,true); }
+    renderAll(state.alerts);
+  }
+}
+navigator.mediaDevices.getUserMedia({ video: true })
+  .then(s => { $("camera").srcObject = s; })
+  .catch(() => { $("camera").style.display="none"; $("videoBox").insertAdjacentHTML("beforeend",`<p class="cam-unavail">Camera unavailable — allow browser permission or connect a webcam.</p>`); });
+
+renderHistory();
+fetchAlerts();
+setInterval(fetchAlerts, POLL_MS);
+
+// ── LIVE ALERT POPUP ──────────────────────────────
+let popupTimer = null;
+let popupCurrentAlert = null;
+const POPUP_DURATION = 6000; // auto-dismiss after 6 seconds
+
+function showPopup(alert) {
+  popupCurrentAlert = alert;
+
+  // Fill in content
+  const sev = alert.severity || "medium";
+  document.getElementById("popupBadge").className = "popup-badge " + sev;
+  document.getElementById("popupSev").textContent = sev.toUpperCase();
+  document.getElementById("popupTitle").textContent = alert.title || readable(alert.type);
+  document.getElementById("popupZone").textContent = alert.zone_name || alert.zone;
+  document.getElementById("popupType").textContent = readable(alert.type);
+  document.getElementById("popupRoute").textContent = Array.isArray(alert.routed_to)
+    ? alert.routed_to.join(", ")
+    : (alert.authority || "Security");
+
+  // Show popup
+  const popup = document.getElementById("alert-popup");
+  popup.classList.add("show");
+
+  // Progress bar countdown
+  const bar = document.getElementById("popupBar");
+  bar.style.transition = "none";
+  bar.style.width = "100%";
+  setTimeout(() => {
+    bar.style.transition = `width ${POPUP_DURATION}ms linear`;
+    bar.style.width = "0%";
+  }, 30);
+
+  // Auto dismiss
+  clearTimeout(popupTimer);
+  popupTimer = setTimeout(dismissPopup, POPUP_DURATION);
+}
+
+function dismissPopup() {
+  clearTimeout(popupTimer);
+  document.getElementById("alert-popup").classList.remove("show");
+  popupCurrentAlert = null;
+}
+
+document.getElementById("popupClose").addEventListener("click", dismissPopup);
+
+document.getElementById("popupAck").addEventListener("click", () => {
+  if (popupCurrentAlert) {
+    state.alerts = state.alerts.filter(a => a.id !== popupCurrentAlert.id);
+    renderAll(state.alerts);
+  }
+  dismissPopup();
+});
+
+document.getElementById("popupView").addEventListener("click", () => {
+  if (popupCurrentAlert) openDetailModal(popupCurrentAlert);
+  dismissPopup();
+});
+
+// ── HOOK INTO fireAlert so popup shows on demo trigger too ──
+const _origFireAlert = fireAlert;
+window.fireAlert = function(opts) {
+  _origFireAlert(opts);
+  // Show popup for the latest alert added
+  setTimeout(() => {
+    if (state.alerts.length > 0) showPopup(state.alerts[0]);
+  }, 100);
+};
+
+// ── HOOK INTO fetchAlerts to show popup on real backend alerts ──
+const _origFetchAlerts = fetchAlerts;
+let lastAlertId = null;
+window.fetchAlerts = async function() {
+  const prevFirst = state.alerts[0];
+  await _origFetchAlerts();
+  const newFirst = state.alerts[0];
+  if (newFirst && (!prevFirst || newFirst.id !== prevFirst.id)) {
+    if (newFirst.id !== lastAlertId) {
+      lastAlertId = newFirst.id;
+      showPopup(newFirst);
+    }
+  }
+};
+</script>
+<!-- Live Alert Popup -->
+<div id="alert-popup">
+  <div class="popup-top">
+    <div id="popupBadge" class="popup-badge high">
+      <span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block;"></span>
+      <span id="popupSev">HIGH</span>
+    </div>
+    <button class="popup-close" id="popupClose">✕</button>
+  </div>
+  <div class="popup-title" id="popupTitle">Alert</div>
+  <div class="popup-meta">
+    <span>📍 <span id="popupZone">—</span></span>
+    <span>🔍 <span id="popupType">—</span></span>
+  </div>
+  <div class="popup-route">→ Notifying: <strong id="popupRoute">—</strong></div>
+  <div class="popup-actions">
+    <button class="popup-btn-ack" id="popupAck">✓ Acknowledge</button>
+    <button class="popup-btn-view" id="popupView">View Details</button>
+  </div>
+  <div class="popup-progress"><div class="popup-progress-bar" id="popupBar"></div></div>
+</div>
+</body>
+</html>
