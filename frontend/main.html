@@ -362,37 +362,23 @@
         </select>
       </div>
 
+      <!-- ✅ CHANGED: Only 4 alert types remain (student distress, unauthorized access, loitering, tailgating removed) -->
       <div class="config-field">
         <label class="config-label">🔍 Alert Type</label>
         <select class="cfg-select" id="cfgType">
           <option value="">🎲 Random Type</option>
           <option value="crowd">👥 Crowd Threshold</option>
           <option value="restricted">🚫 Restricted Zone Breach</option>
-          <option value="distress">🆘 Student Distress</option>
           <option value="suspicious">👁 Suspicious Activity</option>
-          <option value="unauthorized">🔓 Unauthorized Access</option>
-          <option value="loitering">🚶 Loitering</option>
-          <option value="tailgating">🚪 Tailgating</option>
+
         </select>
       </div>
 
-      <div class="config-field">
-        <label class="config-label">→ Route To</label>
-        <select class="cfg-select" id="cfgRoute">
-          <option value="">🎲 Auto Route</option>
-          <option value="Security">🛡 Security</option>
-          <option value="HOD">🎓 HOD</option>
-          <option value="Nearest Faculty">👨‍🏫 Nearest Faculty</option>
-          <option value="Admin">🏢 Admin</option>
-          <option value="Security,HOD">🛡 Security + HOD</option>
-          <option value="Security,Admin">🛡 Security + Admin</option>
-          <option value="Security,HOD,Admin">🔔 All — Security + HOD + Admin</option>
-        </select>
-      </div>
+
 
     </div>
 
-    <button class="config-fire-btn" id="configFireBtn">⚡ Fire Alert Now</button>
+    <button class="config-fire-btn" id="configFireBtn">⚡ Activate Alert</button>
     <button class="config-cancel" id="configCancel">Cancel</button>
   </div>
 </div>
@@ -430,15 +416,14 @@
 const API_BASE = "http://10.86.122.254:5000";
 const POLL_MS = 1500;
 const ZONES = ["Main Gate","AI Lab","Anticlock","KSD","Container"];
+
+// ✅ CHANGED: Only 4 alert types remain (student distress, unauthorized access, loitering, tailgating removed)
 const TYPE_MAP = {
-  crowd:        { title:"Crowd threshold exceeded",          severity:"medium", routes:["Security","Admin"] },
-  restricted:   { title:"Restricted zone breach detected",   severity:"high",   routes:["Security","HOD"] },
-  distress:     { title:"Student distress gesture detected", severity:"high",   routes:["Nearest Faculty","Security"] },
-  suspicious:   { title:"Suspicious activity flagged",       severity:"medium", routes:["Security"] },
-  unauthorized: { title:"Unauthorized access attempt",       severity:"high",   routes:["Security","Admin","HOD"] },
-  loitering:    { title:"Loitering detected after hours",    severity:"low",    routes:["Security"] },
-  tailgating:   { title:"Tailgating event at entry point",   severity:"medium", routes:["Security"] },
+  crowd:      { title:"Crowd threshold exceeded",         severity:"medium", routes:["Security","Admin"] },
+  restricted: { title:"Restricted zone breach detected",  severity:"high",   routes:["Security","HOD"] },
+  suspicious: { title:"Suspicious activity flagged",      severity:"medium", routes:["Security"] },
 };
+
 const TYPE_KEYS = Object.keys(TYPE_MAP);
 const state = { alerts: [], history: [], fallback: false };
 let currentAlert = null;
@@ -455,7 +440,7 @@ $("cfgSeverity").addEventListener("change", function() {
 
 // ── CONFIGURATOR MODAL ──
 function openConfigModal() {
-  ["cfgZone","cfgSeverity","cfgType","cfgRoute"].forEach(id => $(id).value = "");
+  ["cfgZone","cfgSeverity","cfgType"].forEach(id => $(id).value = "");
   $("cfgSeverity").classList.remove("sev-high","sev-medium","sev-low");
   $("configModal").classList.add("active");
 }
@@ -470,8 +455,7 @@ $("configFireBtn").addEventListener("click", () => {
   const zone    = $("cfgZone").value    || ZONES[Math.floor(Math.random()*ZONES.length)];
   const typeKey = $("cfgType").value    || TYPE_KEYS[Math.floor(Math.random()*TYPE_KEYS.length)];
   const severity= $("cfgSeverity").value|| null;
-  const routeVal= $("cfgRoute").value;
-  const routes  = routeVal ? routeVal.split(",") : null;
+  const routes  = null;
   closeConfigModal();
   setTimeout(() => fireAlert({ zone, typeKey, severity, routes }), 150);
 });

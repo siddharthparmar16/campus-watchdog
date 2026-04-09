@@ -215,7 +215,7 @@ def stream():
 
 @app.route("/dashboard")
 def dashboard():
-    return send_file("main.html")
+    return send_file("../frontend/main.html")
 
 # ── start ─────────────────────────────────────────
 if __name__ == "__main__":
