@@ -27,3 +27,80 @@ The system monitors students through a classroom camera, detects whether their e
 ---
 
 ## 🏗️ System Architecture
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Computer Vision | OpenCV, Haar Cascade |
+| Streaming | MJPEG over Flask |
+| Backend | Python, Flask, Flask-CORS, SSE |
+| Frontend | HTML, CSS, JavaScript |
+| Real-time | Server-Sent Events (SSE) |
+| Threading | Python threading module |
+
+---
+
+## 🚀 How To Run
+
+### Prerequisites
+```bash
+pip install opencv-python flask flask-cors requests
+```
+
+### Step 1 — Start Flask Backend
+```bash
+cd backend
+python app.py
+```
+Backend runs at `http://0.0.0.0:5000`
+
+### Step 2 — Start Detection
+```bash
+cd ml
+python main.py
+```
+- OpenCV window opens fullscreen
+- Live stream available at `http://YOUR_IP:5001/stream`
+
+### Step 3 — Open Dashboard
+Open in any browser on same WiFi:
+---
+
+## 👥 Team
+
+| Member | Role |
+|--------|------|
+| Sidd | ML Lead — drowsiness detection, streaming |
+| Yashi | Backend — Flask API, SSE, alert routing |
+| Naivam | Frontend — dashboard UI, login page |
+| Aaska | Frontend support — alert components |
+| Bhupendra | GitHub, README, demo video |
+| Meet | Pitch deck, Shark Tank presentation |
+
+---
+
+## 🎯 Problem Statement
+
+**Track 1 — Smart Campus**
+
+Teachers cannot monitor every student simultaneously in large classrooms. Early detection of drowsiness improves student engagement, academic performance, and health outcomes.
+
+---
+
+## 💡 Real-World Impact
+
+- Deployable on any existing classroom webcam
+- No GPU required — runs on standard school computers
+- Scalable to multiple classrooms from single dashboard
+- Privacy-first — no video stored, only metadata transmitted
+
+---
+
+## 🏆 Hackathon
+
+**Event:** KIIF x UIT 36-Hour Hackathon  
+**Track:** T1 — Smart Campus  
+**Date:** April 09-10, 2026  
+**Institution:** Unitedworld Institute of Technology, Karnavati University
