@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Campus Watchdog Dashboard</title>
+  <title>Dizziness Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
@@ -40,9 +40,169 @@
       background-size: 40px 40px; pointer-events: none;
     }
 
+    /* LOGIN PAGE */
+    #login-page {
+      position: relative; z-index: 10;
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px 20px;
+    }
+    #login-page.hidden { display: none; }
+
+    .login-card {
+      background: rgba(12, 18, 42, 0.85);
+      border: 1px solid rgba(108,127,255,0.25);
+      border-radius: 24px;
+      box-shadow: 0 40px 100px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.06);
+      padding: 44px 40px 36px;
+      width: min(460px, 100%);
+      backdrop-filter: blur(20px);
+      animation: loginFadeIn 0.4s cubic-bezier(.22,1,.36,1);
+    }
+    @keyframes loginFadeIn {
+      from { opacity: 0; transform: translateY(24px) scale(0.97); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    .login-logo-ring {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: linear-gradient(135deg, rgba(108,127,255,0.2), rgba(15,214,204,0.2));
+      border: 1px solid rgba(108,127,255,0.4);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; margin: 0 auto 20px;
+      box-shadow: 0 0 30px rgba(108,127,255,0.2);
+    }
+    .login-uni-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--accent2);
+      text-align: center;
+      margin-bottom: 6px;
+    }
+    .login-title {
+      font-size: 1.5rem; font-weight: 800; text-align: center;
+      letter-spacing: -0.02em;
+      background: linear-gradient(100deg, #fff 30%, var(--accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      margin-bottom: 4px;
+    }
+    .login-subtitle {
+      font-size: 0.8rem; color: var(--muted); text-align: center; margin-bottom: 32px;
+      font-family: var(--font-mono);
+    }
+    .login-divider {
+      height: 1px; background: var(--line2); margin-bottom: 28px;
+    }
+
+    .login-field { margin-bottom: 18px; }
+    .login-label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.64rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .login-input, .login-select {
+      width: 100%;
+      padding: 13px 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      color: var(--text);
+      font-family: var(--font-head);
+      font-size: 0.92rem;
+      font-weight: 600;
+      outline: none;
+      transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
+    }
+    .login-input::placeholder { color: rgba(138,150,192,0.5); font-weight: 400; }
+    .login-input:focus, .login-select:focus {
+      border-color: var(--accent);
+      background: rgba(108,127,255,0.08);
+      box-shadow: 0 0 0 3px rgba(108,127,255,0.18);
+    }
+    .login-select {
+      appearance: none; -webkit-appearance: none; cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a96c0' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      background-color: rgba(255,255,255,0.05);
+      padding-right: 38px;
+    }
+    .login-select option { background: #111829; color: var(--text); }
+    .login-select:hover { border-color: rgba(108,127,255,0.5); }
+
+    .login-error {
+      display: none;
+      font-size: 0.78rem; color: #ff7090;
+      font-family: var(--font-mono);
+      margin-top: 6px;
+      padding: 8px 12px;
+      background: rgba(255,77,114,0.1);
+      border: 1px solid rgba(255,77,114,0.25);
+      border-radius: 8px;
+    }
+    .login-error.show { display: block; }
+
+    .login-btn {
+      width: 100%; padding: 15px;
+      border: 0; border-radius: 13px;
+      background: linear-gradient(115deg, var(--accent), var(--accent2));
+      color: #fff; font-family: var(--font-head);
+      font-weight: 800; font-size: 1rem; cursor: pointer;
+      margin-top: 8px;
+      transition: opacity 0.15s, transform 0.1s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      letter-spacing: 0.01em;
+    }
+    .login-btn:hover { opacity: 0.88; }
+    .login-btn:active { transform: scale(0.98); }
+
+    .login-footer {
+      text-align: center; margin-top: 22px;
+      font-size: 0.74rem; color: var(--muted);
+      font-family: var(--font-mono);
+      line-height: 1.6;
+    }
+    .login-footer span { color: var(--accent2); }
+
+    /* DASHBOARD PAGE */
+    #dashboard-page { display: none; }
+    #dashboard-page.visible { display: block; animation: dashIn 0.4s cubic-bezier(.22,1,.36,1); }
+    @keyframes dashIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    .btn-logout {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: rgba(255,77,114,0.1);
+      border: 1px solid rgba(255,77,114,0.3);
+      color: #ff9db5;
+      border-radius: 10px; padding: 9px 14px;
+      font-family: var(--font-head); font-size: 0.85rem; font-weight: 600;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .btn-logout:hover { background: rgba(255,77,114,0.22); }
+
+    .welcome-strip {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--accent2);
+      padding: 6px 12px;
+      background: rgba(15,214,204,0.07);
+      border: 1px solid rgba(15,214,204,0.2);
+      border-radius: 8px;
+      white-space: nowrap;
+    }
+
     .app-shell { position: relative; z-index: 2; max-width: 1280px; margin: 0 auto; padding: 24px 20px 40px; }
     .glass { background: var(--card); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); }
-    .topbar { backdrop-filter: blur(18px); padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; border-radius: 16px; }
+    .topbar { backdrop-filter: blur(18px); padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; border-radius: 16px; flex-wrap: wrap; }
     .topbar-brand p.eyebrow { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent2); margin-bottom: 4px; }
     .topbar-brand h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em; background: linear-gradient(100deg, #fff 30%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
     .topbar-brand .subtitle { font-size: 0.82rem; color: var(--muted); margin-top: 2px; }
@@ -56,11 +216,6 @@
     .btn-history:hover { background: rgba(255,255,255,0.1); }
     .history-count { background: var(--accent); color: #fff; font-size: 0.7rem; font-weight: 700; border-radius: 999px; padding: 1px 7px; min-width: 20px; text-align: center; }
 
-    .btn-trigger { display: inline-flex; align-items: center; border: 0; border-radius: 12px; background: linear-gradient(115deg, var(--accent), var(--accent2)); color: #fff; font-family: var(--font-head); font-weight: 700; font-size: 0.88rem; cursor: pointer; overflow: hidden; }
-    .btn-trigger-main { padding: 10px 18px; border: 0; background: none; color: #fff; font-family: inherit; font-weight: 700; font-size: inherit; cursor: pointer; display: flex; align-items: center; gap: 7px; }
-    .btn-trigger-main:hover { opacity: 0.88; }
-
-    /* History dropdown */
     .dropdown-panel { display: none; position: fixed; z-index: 2147483647; min-width: 220px; background: #111829; border: 1px solid var(--line2); border-radius: 14px; box-shadow: 0 20px 60px rgba(0,0,0,0.85), 0 0 0 1px rgba(108,127,255,0.18); overflow: hidden; animation: dropDown 0.18s cubic-bezier(.22,1,.36,1); }
     .dropdown-panel.open { display: block; }
     @keyframes dropDown { from { opacity:0; transform: translateY(-8px) scale(0.97); } to { opacity:1; transform: none; } }
@@ -76,7 +231,6 @@
     .hi-meta { font-size: 0.74rem; color: var(--muted); margin-top: 3px; font-family: var(--font-mono); }
     .hi-time { font-size: 0.72rem; color: var(--muted); font-family: var(--font-mono); flex-shrink: 0; }
 
-    /* Grid */
     .dashboard-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
     .panel { padding: 16px; }
     .col8 { grid-column: span 8; } .col4 { grid-column: span 4; }
@@ -92,19 +246,104 @@
     #camera { width: 100%; border-radius: 10px; display: block; }
     .cam-unavail { color: var(--muted); font-size: 0.82rem; padding: 20px; text-align: center; z-index: 2; position: relative; }
 
-    .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    .metric-card { background: rgba(255,255,255,0.03); border: 1px solid var(--line); border-radius: 12px; padding: 14px 12px; text-align: center; }
-    .metric-val { font-size: 1.8rem; font-weight: 800; font-family: var(--font-mono); line-height: 1; }
-    .metric-val.danger-val { color: var(--danger); }
-    .metric-label { font-size: 0.75rem; color: var(--muted); margin-top: 6px; }
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       DETECTION COUNTER CARDS
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    .counter-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 4px;
+    }
+    .counter-card {
+      border-radius: 14px;
+      padding: 18px 16px;
+      border: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .counter-card:hover { transform: translateY(-2px); }
+    .counter-card.relaxed-card {
+      background: linear-gradient(145deg, rgba(15,214,138,0.1), rgba(15,214,204,0.06));
+      border-color: rgba(15,214,138,0.3);
+    }
+    .counter-card.drowsy-card {
+      background: linear-gradient(145deg, rgba(255,140,0,0.12), rgba(255,77,114,0.06));
+      border-color: rgba(255,140,0,0.35);
+    }
+    .counter-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+    }
+    .counter-card.relaxed-card::before {
+      background: linear-gradient(90deg, var(--success), var(--accent2));
+    }
+    .counter-card.drowsy-card::before {
+      background: linear-gradient(90deg, #ff8c00, var(--danger));
+    }
+    .counter-emoji { font-size: 1.6rem; line-height: 1; }
+    .counter-num {
+      font-size: 2.6rem;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      line-height: 1;
+    }
+    .counter-card.relaxed-card .counter-num { color: var(--success); }
+    .counter-card.drowsy-card .counter-num { color: #ff8c00; }
+    .counter-label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      text-align: center;
+    }
+    .counter-badge {
+      font-size: 0.65rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+    }
+    .counter-card.relaxed-card .counter-badge {
+      background: rgba(15,214,138,0.15);
+      color: var(--success);
+      border: 1px solid rgba(15,214,138,0.3);
+    }
+    .counter-card.drowsy-card .counter-badge {
+      background: rgba(255,140,0,0.15);
+      color: #ff8c00;
+      border: 1px solid rgba(255,140,0,0.35);
+    }
+    /* Bump animation when count increments */
+    @keyframes countBump {
+      0%   { transform: scale(1); }
+      40%  { transform: scale(1.25); }
+      100% { transform: scale(1); }
+    }
+    .count-bump { animation: countBump 0.35s cubic-bezier(.22,1,.36,1); }
 
-    .zone-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    .zone-card { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; background: rgba(255,255,255,0.025); transition: border-color 0.3s, transform 0.2s; }
-    .zone-card.full { grid-column: span 2; }
-    .zone-card h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 5px; }
-    .zone-status { font-size: 0.78rem; font-family: var(--font-mono); }
-    .zone-card.warn { border-color: rgba(255,170,56,0.55); }
-    .zone-card.critical { border-color: rgba(255,77,114,0.6); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,77,114,0.12); }
+    /* API status note */
+    .api-note {
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      text-align: center;
+      padding: 10px 14px;
+      background: rgba(255,255,255,0.025);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      margin-top: 12px;
+      line-height: 1.5;
+    }
+    .api-note strong { color: var(--accent2); }
 
     .alert-list-wrap { max-height: 340px; overflow-y: auto; display: flex; flex-direction: column; gap: 9px; padding-right: 2px; }
     .alert-list-wrap::-webkit-scrollbar { width: 4px; }
@@ -120,9 +359,6 @@
     .empty-state { border: 1px dashed var(--line); border-radius: 11px; text-align: center; padding: 24px 12px; color: var(--muted); font-size: 0.85rem; }
     .empty-state strong { display: block; color: var(--text); font-size: 0.95rem; margin-bottom: 5px; }
 
-    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-       SHARED MODAL OVERLAY
-    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
     .modal-overlay { display: none; position: fixed; inset: 0; z-index: 9000; background: rgba(4,7,18,0.85); backdrop-filter: blur(10px); align-items: center; justify-content: center; }
     .modal-overlay.active { display: flex; }
     @keyframes popIn { from{transform:scale(.9) translateY(20px);opacity:0} to{transform:none;opacity:1} }
@@ -130,59 +366,6 @@
     .modal-close-x { position: absolute; top: 14px; right: 16px; background: rgba(255,255,255,0.05); border: 1px solid var(--line); color: var(--muted); border-radius: 8px; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.95rem; transition: background 0.15s; }
     .modal-close-x:hover { background: rgba(255,255,255,0.12); color: var(--text); }
 
-    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-       CONFIGURATOR MODAL
-    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-    .config-modal {
-      background: #0c1128;
-      border: 1px solid rgba(108,127,255,0.3);
-      border-radius: 22px;
-      box-shadow: 0 40px 100px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.06);
-      width: min(520px, 95vw);
-      padding: 28px;
-      position: relative;
-      animation: popIn 0.22s cubic-bezier(.22,1,.36,1);
-    }
-    .config-modal-eyebrow { font-family: var(--font-mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent2); margin-bottom: 6px; }
-    .config-modal-title { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.01em; }
-    .config-modal-sub { font-size: 0.82rem; color: var(--muted); margin-top: 4px; margin-bottom: 22px; }
-
-    /* 2×2 grid of dropdowns */
-    .config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
-    .config-field { display: flex; flex-direction: column; gap: 6px; }
-    .config-label { font-family: var(--font-mono); font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
-
-    /* Styled select */
-    .cfg-select {
-      appearance: none; -webkit-appearance: none;
-      width: 100%; padding: 11px 34px 11px 13px;
-      background: rgba(255,255,255,0.055);
-      border: 1px solid rgba(255,255,255,0.14);
-      border-radius: 11px; color: var(--text);
-      font-family: var(--font-head); font-size: 0.88rem; font-weight: 600;
-      cursor: pointer; outline: none;
-      transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a96c0' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 12px center;
-    }
-    .cfg-select:hover { border-color: rgba(108,127,255,0.5); background-color: rgba(108,127,255,0.07); }
-    .cfg-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(108,127,255,0.2); }
-    .cfg-select option { background: #111829; color: var(--text); font-weight: 500; padding: 6px; }
-    /* Severity colour accent */
-    .cfg-select.sev-high   { border-color: rgba(255,77,114,0.55);  color: #ff9db5; }
-    .cfg-select.sev-medium { border-color: rgba(255,170,56,0.55);  color: #ffcc7a; }
-    .cfg-select.sev-low    { border-color: rgba(15,214,138,0.55);  color: #0fd68a; }
-
-    .config-fire-btn { width: 100%; padding: 14px; border: 0; border-radius: 12px; background: linear-gradient(115deg, var(--accent), var(--accent2)); color: #fff; font-family: var(--font-head); font-weight: 800; font-size: 1rem; cursor: pointer; transition: opacity 0.15s, transform 0.1s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-    .config-fire-btn:hover { opacity: 0.88; }
-    .config-fire-btn:active { transform: scale(0.98); }
-    .config-cancel { display: block; text-align: center; margin-top: 10px; font-size: 0.78rem; color: var(--muted); cursor: pointer; font-family: var(--font-mono); background: none; border: none; width: 100%; padding: 6px; transition: color 0.15s; }
-    .config-cancel:hover { color: var(--text); }
-
-    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-       ALERT DETAIL MODAL
-    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
     .detail-modal { background: #0c1128; border: 1px solid rgba(108,127,255,0.28); border-radius: 20px; box-shadow: 0 32px 90px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.05); width: min(540px, 95vw); padding: 26px; position: relative; animation: popIn 0.2s cubic-bezier(.22,1,.36,1); }
     .modal-sev-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; }
     .modal-sev-badge.high { background: rgba(255,77,114,0.15); color: #ff7090; border: 1px solid rgba(255,77,114,0.35); }
@@ -210,110 +393,185 @@
 
     @media (max-width: 980px) {
       .col8, .col4 { grid-column: span 12; }
-      .modal-grid, .config-grid { grid-template-columns: 1fr; }
+      .modal-grid { grid-template-columns: 1fr; }
     }
-    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   LIVE ALERT POPUP (toast notification)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-#alert-popup {
-  position: fixed; top: 24px; right: 24px; z-index: 99999;
-  width: 340px; max-width: calc(100vw - 48px);
-  background: #0c1128;
-  border: 1px solid rgba(108,127,255,0.3);
-  border-radius: 18px;
-  box-shadow: 0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(108,127,255,0.12);
-  padding: 18px 20px;
-  transform: translateX(calc(100% + 40px));
-  opacity: 0;
-  transition: transform 0.38s cubic-bezier(.22,1,.36,1), opacity 0.3s ease;
-  pointer-events: none;
-}
-#alert-popup.show {
-  transform: translateX(0);
-  opacity: 1;
-  pointer-events: auto;
-}
-.popup-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
-.popup-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px; border-radius: 999px; font-family: var(--font-mono); font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
-.popup-badge.high    { background: rgba(255,77,114,0.15); color: #ff7090; border: 1px solid rgba(255,77,114,0.35); }
-.popup-badge.medium  { background: rgba(255,170,56,0.15); color: #ffba5e; border: 1px solid rgba(255,170,56,0.35); }
-.popup-badge.low     { background: rgba(15,214,138,0.15); color: #0fd68a; border: 1px solid rgba(15,214,138,0.35); }
-.popup-badge.critical{ background: rgba(255,77,114,0.2);  color: #ff4d72; border: 1px solid rgba(255,77,114,0.5); }
-.popup-close { background: rgba(255,255,255,0.05); border: 1px solid var(--line); color: var(--muted); border-radius: 7px; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.85rem; flex-shrink: 0; transition: background 0.15s; }
-.popup-close:hover { background: rgba(255,255,255,0.12); color: var(--text); }
-.popup-title { font-size: 1rem; font-weight: 800; margin-bottom: 6px; line-height: 1.3; }
-.popup-meta { font-size: 0.8rem; color: #a0b0e0; display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
-.popup-meta span { display: flex; align-items: center; gap: 4px; }
-.popup-route { font-size: 0.75rem; color: var(--muted); font-family: var(--font-mono); margin-bottom: 14px; }
-.popup-route strong { color: #b5bdff; }
-.popup-actions { display: flex; gap: 8px; }
-.popup-btn-ack { flex: 1; padding: 9px; border: 0; border-radius: 10px; background: linear-gradient(115deg, var(--accent), var(--accent2)); color: #fff; font-family: var(--font-head); font-weight: 700; font-size: 0.82rem; cursor: pointer; transition: opacity 0.15s; }
-.popup-btn-ack:hover { opacity: 0.85; }
-.popup-btn-view { padding: 9px 14px; background: rgba(255,255,255,0.05); border: 1px solid var(--line2); color: var(--text); border-radius: 10px; font-family: var(--font-head); font-size: 0.82rem; cursor: pointer; transition: background 0.15s; }
-.popup-btn-view:hover { background: rgba(255,255,255,0.1); }
-.popup-progress { height: 3px; border-radius: 3px; background: rgba(255,255,255,0.08); margin-top: 14px; overflow: hidden; }
-.popup-progress-bar { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2)); width: 100%; transition: width linear; }
+
+    #alert-popup { position: fixed; top: 24px; right: 24px; z-index: 99999; width: 340px; max-width: calc(100vw - 48px); background: #0c1128; border: 1px solid rgba(108,127,255,0.3); border-radius: 18px; box-shadow: 0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(108,127,255,0.12); padding: 18px 20px; transform: translateX(calc(100% + 40px)); opacity: 0; transition: transform 0.38s cubic-bezier(.22,1,.36,1), opacity 0.3s ease; pointer-events: none; }
+    #alert-popup.show { transform: translateX(0); opacity: 1; pointer-events: auto; }
+    .popup-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+    .popup-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px; border-radius: 999px; font-family: var(--font-mono); font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
+    .popup-badge.high    { background: rgba(255,77,114,0.15); color: #ff7090; border: 1px solid rgba(255,77,114,0.35); }
+    .popup-badge.medium  { background: rgba(255,170,56,0.15); color: #ffba5e; border: 1px solid rgba(255,170,56,0.35); }
+    .popup-badge.low     { background: rgba(15,214,138,0.15); color: #0fd68a; border: 1px solid rgba(15,214,138,0.35); }
+    .popup-badge.critical{ background: rgba(255,77,114,0.2);  color: #ff4d72; border: 1px solid rgba(255,77,114,0.5); }
+    .popup-close { background: rgba(255,255,255,0.05); border: 1px solid var(--line); color: var(--muted); border-radius: 7px; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.85rem; flex-shrink: 0; transition: background 0.15s; }
+    .popup-close:hover { background: rgba(255,255,255,0.12); color: var(--text); }
+    .popup-title { font-size: 1rem; font-weight: 800; margin-bottom: 6px; line-height: 1.3; }
+    .popup-meta { font-size: 0.8rem; color: #a0b0e0; display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .popup-meta span { display: flex; align-items: center; gap: 4px; }
+    .popup-route { font-size: 0.75rem; color: var(--muted); font-family: var(--font-mono); margin-bottom: 14px; }
+    .popup-route strong { color: #b5bdff; }
+    .popup-actions { display: flex; gap: 8px; }
+    .popup-btn-ack { flex: 1; padding: 9px; border: 0; border-radius: 10px; background: linear-gradient(115deg, var(--accent), var(--accent2)); color: #fff; font-family: var(--font-head); font-weight: 700; font-size: 0.82rem; cursor: pointer; transition: opacity 0.15s; }
+    .popup-btn-ack:hover { opacity: 0.85; }
+    .popup-btn-view { padding: 9px 14px; background: rgba(255,255,255,0.05); border: 1px solid var(--line2); color: var(--text); border-radius: 10px; font-family: var(--font-head); font-size: 0.82rem; cursor: pointer; transition: background 0.15s; }
+    .popup-btn-view:hover { background: rgba(255,255,255,0.1); }
+    .popup-progress { height: 3px; border-radius: 3px; background: rgba(255,255,255,0.08); margin-top: 14px; overflow: hidden; }
+    .popup-progress-bar { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2)); width: 100%; transition: width linear; }
+
+    /* DROWSINESS BANNER */
+    #drowsy-banner {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 99998;
+      background: linear-gradient(90deg, rgba(255,140,0,0.97), rgba(255,170,56,0.97));
+      color: #1a0e00;
+      font-family: var(--font-head); font-weight: 800; font-size: 0.95rem;
+      padding: 13px 20px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      transform: translateY(-100%);
+      transition: transform 0.35s cubic-bezier(.22,1,.36,1);
+      box-shadow: 0 4px 24px rgba(255,140,0,0.45);
+    }
+    #drowsy-banner.show { transform: translateY(0); animation: drowsyPulse 1.4s ease-in-out infinite; }
+    @keyframes drowsyPulse {
+      0%,100% { box-shadow: 0 4px 24px rgba(255,140,0,0.45); }
+      50%      { box-shadow: 0 4px 40px rgba(255,140,0,0.85); }
+    }
+    .drowsy-banner-text { display: flex; align-items: center; gap: 10px; }
+    .drowsy-banner-close {
+      background: rgba(0,0,0,0.15); border: none; border-radius: 8px;
+      color: #1a0e00; font-size: 0.85rem; font-weight: 700;
+      padding: 5px 12px; cursor: pointer; flex-shrink: 0;
+      font-family: var(--font-head); transition: background 0.15s;
+    }
+    .drowsy-banner-close:hover { background: rgba(0,0,0,0.28); }
   </style>
 </head>
 <body>
+
+<!-- LOGIN PAGE -->
+<div id="login-page">
+  <div class="login-card">
+    <div class="login-logo-ring">🎓</div>
+    <div class="login-uni-eyebrow">Unitedworld Institute of Technology</div>
+    <div class="login-title">Dizziness Dashboard</div>
+    <div class="login-subtitle">Student Wellness & Dizziness Detection System</div>
+    <div class="login-divider"></div>
+
+    <div class="login-field">
+      <label class="login-label" for="input-teacher">✉️ Teacher Gmail Address</label>
+      <input class="login-input" id="input-teacher" type="email" placeholder="yourname@gmail.com" autocomplete="email" />
+    </div>
+
+    <div class="login-field">
+      <label class="login-label" for="input-password">🔑 Password</label>
+      <div style="position:relative;">
+        <input class="login-input" id="input-password" type="password" placeholder="Enter your password" autocomplete="current-password" style="padding-right: 46px;" />
+        <button id="toggle-password" type="button" style="position:absolute;right:13px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:1rem;padding:0;line-height:1;transition:color 0.15s;" title="Show/hide password">👁</button>
+      </div>
+    </div>
+
+    <div class="login-field">
+      <label class="login-label" for="input-room">🏫 Classroom Number</label>
+      <select class="login-select" id="input-room">
+        <option value="">— Select a classroom —</option>
+        <option value="Room 101">Room 101</option>
+        <option value="Room 102">Room 102</option>
+        <option value="Room 103">Room 103</option>
+        <option value="Lab A">Lab A</option>
+        <option value="Lab B">Lab B</option>
+      </select>
+    </div>
+
+    <div class="login-error" id="login-error">⚠ Please fill in all fields. Gmail must be a valid @gmail.com address.</div>
+
+    <button class="login-btn" id="login-btn">🔐 Login to Dashboard</button>
+
+    <div class="login-footer">
+      Secured by <span>Dizziness Dashboard</span> · UIT Security Division<br>
+      No authentication required — for authorized staff only
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD PAGE -->
+<div id="dashboard-page">
 <div class="app-shell">
 
   <header class="topbar glass">
     <div class="topbar-brand">
       <p class="eyebrow">Unitedworld Institute of Technology</p>
-      <h1>AI Campus Watchdog</h1>
-      <p class="subtitle">Smart Campus Security Operations Center</p>
+      <h1>Dizziness Dashboard</h1>
+      <p class="subtitle" id="welcome-subtitle">Student Wellness & Dizziness Detection System</p>
     </div>
     <div class="topbar-right">
+      <div class="welcome-strip" id="welcome-strip" style="display:none;"></div>
       <div class="conn-badge" id="connBadge"><span class="dot"></span><span id="connText">Connecting...</span></div>
       <button class="btn-history" id="historyBtn">📄 Alert History <span class="history-count" id="historyCount">0</span></button>
-      <button class="btn-trigger" id="openConfigBtn"><span class="btn-trigger-main">⚡ Trigger Demo Alert</span></button>
+      <button class="btn-logout" id="logoutBtn">🔓 Logout</button>
     </div>
   </header>
 
   <main class="dashboard-grid">
 
+    <!-- Live Feed -->
     <section class="panel glass col8">
       <div class="panel-head"><h2>📷 Live Security Feed</h2><span class="chip">Demo Ready</span></div>
       <div class="video-box" id="videoBox">
-        <div class="scan-line"></div>
-        <video id="camera" autoplay playsinline></video>
+        <!-- <div class="scan-line"></div> -->
+        <img id="liveStream"
+     src="http://192.168.14.117:5001/stream"
+     style="width:100%; height:100%; object-fit:cover; border-radius:8px; display:block;"
+     alt="Live Camera Feed"
+     onerror="this.style.display='none';">
       </div>
     </section>
 
+    <!-- Detection Counters Panel -->
     <div class="col4" style="display:flex;flex-direction:column;gap:16px;">
       <section class="panel glass" style="padding:16px;">
-        <div class="panel-head"><h2>📈 System Pulse</h2><span class="chip neutral" id="lastRefresh">Waiting...</span></div>
-        <div class="metrics-grid">
-          <div class="metric-card"><div class="metric-val" id="metricTotal">0</div><div class="metric-label">Total Alerts</div></div>
-          <div class="metric-card"><div class="metric-val danger-val" id="metricCritical">0</div><div class="metric-label">Critical</div></div>
-          <div class="metric-card"><div class="metric-val" id="metricZones">5</div><div class="metric-label">Zones</div></div>
+        <div class="panel-head">
+          <h2>📊 Detection Stats</h2>
+          <span class="chip neutral" id="lastRefresh">Waiting...</span>
         </div>
-      </section>
-      <section class="panel glass" style="padding:16px;">
-        <div class="panel-head"><h2>📍 Campus Zones</h2><span class="chip">Real-time</span></div>
-        <div class="zone-grid" id="zoneGrid">
-          <article class="zone-card" data-zone="Main Gate"><h3>🏛 Main Gate</h3><p class="zone-status">🟢 Normal</p></article>
-          <article class="zone-card" data-zone="AI Lab"><h3>🤖 AI Lab</h3><p class="zone-status">🟢 Normal</p></article>
-          <article class="zone-card" data-zone="Anticlock"><h3>🕰 Anticlock</h3><p class="zone-status">🟢 Normal</p></article>
-          <article class="zone-card" data-zone="KSD"><h3>🏫 KSD</h3><p class="zone-status">🟢 Normal</p></article>
-          <article class="zone-card full" data-zone="Container"><h3>📦 Container</h3><p class="zone-status">🟢 Normal</p></article>
+
+        <div class="counter-grid">
+          <!-- Relaxed Counter -->
+          <div class="counter-card relaxed-card">
+            <div class="counter-emoji">😌</div>
+            <div class="counter-num" id="count-relaxed">0</div>
+            <div class="counter-label">Relaxed</div>
+            <div class="counter-badge">LOW</div>
+          </div>
+
+          <!-- Drowsiness Counter -->
+          <div class="counter-card drowsy-card">
+            <div class="counter-emoji">😴</div>
+            <div class="counter-num" id="count-drowsy">0</div>
+            <div class="counter-label">Drowsy</div>
+            <div class="counter-badge">HIGH</div>
+          </div>
+        </div>
+
+        <div class="api-note">
+          Detections are received automatically from the<br>
+          <strong>Flask API</strong> at <strong>10.86.122.254:5000</strong>
         </div>
       </section>
     </div>
 
-    <!-- Alert Command Center — no bottom control panel -->
+    <!-- Alert Command Center -->
     <section class="panel glass col8">
       <div class="panel-head"><h2>🚨 Alert Command Center</h2><span class="chip danger" id="activeCount">0 Active</span></div>
       <div class="alert-list-wrap" id="alertList">
         <div class="empty-state">
           <strong>No active alerts</strong>
-          Click ⚡ Trigger Demo Alert above to simulate an alert event.
+          Detections from the camera feed will appear here automatically.
         </div>
       </div>
     </section>
 
   </main>
+</div>
 </div>
 
 <!-- History Dropdown -->
@@ -324,62 +582,6 @@
   <div id="historyList"><div class="history-empty">No alerts recorded yet.</div></div>
   <div style="padding:8px 14px;border-top:1px solid var(--line);">
     <button onclick="clearHistory()" style="background:none;border:none;color:var(--muted);font-size:0.75rem;cursor:pointer;font-family:var(--font-mono);">✕ Clear History</button>
-  </div>
-</div>
-
-<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-     CONFIGURATOR MODAL — dropdowns inside the popup
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-<div class="modal-overlay" id="configModal">
-  <div class="config-modal">
-    <button class="modal-close-x" id="configClose">✕</button>
-
-    <div class="config-modal-eyebrow">⚡ Alert Simulator</div>
-    <div class="config-modal-title">Configure &amp; Fire Alert</div>
-    <div class="config-modal-sub">Select options below, then hit Fire — or leave any blank for a random pick.</div>
-
-    <div class="config-grid">
-
-      <div class="config-field">
-        <label class="config-label">📍 Zone</label>
-        <select class="cfg-select" id="cfgZone">
-          <option value="">🎲 Random Zone</option>
-          <option value="Main Gate">🏛 Main Gate</option>
-          <option value="AI Lab">🤖 AI Lab</option>
-          <option value="Anticlock">🕰 Anticlock</option>
-          <option value="KSD">🏫 KSD</option>
-          <option value="Container">📦 Container</option>
-        </select>
-      </div>
-
-      <div class="config-field">
-        <label class="config-label">⚠ Severity</label>
-        <select class="cfg-select" id="cfgSeverity">
-          <option value="">🎲 Random Severity</option>
-          <option value="high">🔴 Critical / High</option>
-          <option value="medium">🟡 Medium</option>
-          <option value="low">🟢 Low</option>
-        </select>
-      </div>
-
-      <!-- ✅ CHANGED: Only 4 alert types remain (student distress, unauthorized access, loitering, tailgating removed) -->
-      <div class="config-field">
-        <label class="config-label">🔍 Alert Type</label>
-        <select class="cfg-select" id="cfgType">
-          <option value="">🎲 Random Type</option>
-          <option value="crowd">👥 Crowd Threshold</option>
-          <option value="restricted">🚫 Restricted Zone Breach</option>
-          <option value="suspicious">👁 Suspicious Activity</option>
-
-        </select>
-      </div>
-
-
-
-    </div>
-
-    <button class="config-fire-btn" id="configFireBtn">⚡ Activate Alert</button>
-    <button class="config-cancel" id="configCancel">Cancel</button>
   </div>
 </div>
 
@@ -412,74 +614,182 @@
   </div>
 </div>
 
-<script>
-const API_BASE = "http://10.86.122.254:5000";
-const POLL_MS = 1500;
-const ZONES = ["Main Gate","AI Lab","Anticlock","KSD","Container"];
+<!-- Live Alert Popup -->
+<div id="alert-popup">
+  <div class="popup-top">
+    <div id="popupBadge" class="popup-badge high">
+      <span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block;"></span>
+      <span id="popupSev">HIGH</span>
+    </div>
+    <button class="popup-close" id="popupClose">✕</button>
+  </div>
+  <div class="popup-title" id="popupTitle">Alert</div>
+  <div class="popup-meta">
+    <span>📍 <span id="popupZone">—</span></span>
+    <span>🔍 <span id="popupType">—</span></span>
+  </div>
+  <div class="popup-route">→ Notifying: <strong id="popupRoute">—</strong></div>
+  <div class="popup-actions">
+    <button class="popup-btn-ack" id="popupAck">✓ Acknowledge</button>
+    <button class="popup-btn-view" id="popupView">View Details</button>
+  </div>
+  <div class="popup-progress"><div class="popup-progress-bar" id="popupBar"></div></div>
+</div>
 
-// ✅ CHANGED: Only 4 alert types remain (student distress, unauthorized access, loitering, tailgating removed)
+<!-- Drowsiness Banner -->
+<div id="drowsy-banner">
+  <div class="drowsy-banner-text">
+    <span style="font-size:1.2rem;">⚠️</span>
+    <span id="drowsy-banner-msg">Student showing signs of drowsiness</span>
+  </div>
+  <button class="drowsy-banner-close" id="drowsy-banner-close">Dismiss ✕</button>
+</div>
+
+<script>
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// LOGIN LOGIC
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const loginPage     = document.getElementById('login-page');
+const dashboardPage = document.getElementById('dashboard-page');
+const loginBtn      = document.getElementById('login-btn');
+const loginError    = document.getElementById('login-error');
+const welcomeStrip  = document.getElementById('welcome-strip');
+const logoutBtn     = document.getElementById('logoutBtn');
+
+let sessionTeacher = '';
+let sessionRoom    = '';
+
+document.getElementById('toggle-password').addEventListener('click', function() {
+  const pwInput = document.getElementById('input-password');
+  const isHidden = pwInput.type === 'password';
+  pwInput.type = isHidden ? 'text' : 'password';
+  this.textContent = isHidden ? '\u{1F648}' : '\u{1F441}';
+  this.style.color = isHidden ? 'var(--accent2)' : 'var(--muted)';
+});
+
+loginBtn.addEventListener('click', function() {
+  const teacher  = document.getElementById('input-teacher').value.trim();
+  const password = document.getElementById('input-password').value.trim();
+  const room     = document.getElementById('input-room').value;
+
+  const gmailRegex = /^[a-zA-Z0-9._%+\-]+@gmail\.com$/i;
+  if (!teacher || !password || !room || !gmailRegex.test(teacher)) {
+    loginError.classList.add('show');
+    return;
+  }
+  loginError.classList.remove('show');
+
+  sessionTeacher = teacher;
+  sessionRoom    = room;
+
+  welcomeStrip.textContent = `Welcome, ${teacher} — Monitoring: ${room}`;
+  welcomeStrip.style.display = 'inline-flex';
+
+  loginPage.classList.add('hidden');
+  dashboardPage.classList.add('visible');
+
+  initCamera();
+  renderHistory();
+  fetchAlerts();
+  setInterval(fetchAlerts, POLL_MS);
+});
+
+logoutBtn.addEventListener('click', function() {
+  dashboardPage.classList.remove('visible');
+  loginPage.classList.remove('hidden');
+  document.getElementById('input-teacher').value = '';
+  document.getElementById('input-password').value = '';
+  document.getElementById('input-password').type = 'password';
+  document.getElementById('toggle-password').textContent = '\u{1F441}';
+  document.getElementById('toggle-password').style.color = 'var(--muted)';
+  document.getElementById('input-room').value = '';
+  welcomeStrip.style.display = 'none';
+  state.alerts  = [];
+  state.history = [];
+  state.counts  = { relaxed: 0, drowsy: 0 };
+  renderAll(state.alerts);
+  renderHistory();
+  updateCounters();
+});
+
+document.getElementById('input-teacher').addEventListener('input',  () => loginError.classList.remove('show'));
+document.getElementById('input-password').addEventListener('input', () => loginError.classList.remove('show'));
+document.getElementById('input-room').addEventListener('change',    () => loginError.classList.remove('show'));
+['input-teacher','input-password'].forEach(id => {
+  document.getElementById(id).addEventListener('keydown', e => { if (e.key === 'Enter') loginBtn.click(); });
+});
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// DASHBOARD LOGIC
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const API_BASE = "http://10.86.122.254:5000";
+const POLL_MS  = 1500;
+const ZONES    = ["Main Gate","AI Lab","Anticlock","KSD","Container"];
+
 const TYPE_MAP = {
-  crowd:      { title:"Crowd threshold exceeded",         severity:"medium", routes:["Security","Admin"] },
-  restricted: { title:"Restricted zone breach detected",  severity:"high",   routes:["Security","HOD"] },
-  suspicious: { title:"Suspicious activity flagged",      severity:"medium", routes:["Security"] },
+  crowd:      { title:"Crowd threshold exceeded",        severity:"medium", routes:["Security","Admin"] },
+  restricted: { title:"Restricted zone breach detected", severity:"high",   routes:["Security","HOD"] },
+  suspicious: { title:"Suspicious activity flagged",     severity:"medium", routes:["Security"] },
+  drowsy:     { title:"Student Drowsiness Detected",     severity:"high",   routes:["Class Teacher"] },
+  relaxed:    { title:"Student is Relaxed",              severity:"low",    routes:["Class Teacher"] },
 };
 
-const TYPE_KEYS = Object.keys(TYPE_MAP);
-const state = { alerts: [], history: [], fallback: false };
+const state = {
+  alerts:  [],
+  history: [],
+  fallback: false,
+  counts: { relaxed: 0, drowsy: 0 },
+  seenIds: new Set()          // track IDs already counted
+};
+
 let currentAlert = null;
 const $ = id => document.getElementById(id);
 const fmt = ts => new Date(ts).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",second:"2-digit"});
 const fmtFull = ts => { const d=new Date(ts); return d.toLocaleDateString()+" at "+d.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}); };
 const readable = s => String(s||"").replaceAll("_"," ").replace(/\b\w/g,m=>m.toUpperCase());
 
-// Severity colour tint on the select itself
-$("cfgSeverity").addEventListener("change", function() {
-  this.classList.remove("sev-high","sev-medium","sev-low");
-  if (this.value) this.classList.add("sev-" + this.value);
-});
+// ── COUNTER UPDATES ──
+function updateCounters() {
+  const relaxedEl = $('count-relaxed');
+  const drowsyEl  = $('count-drowsy');
 
-// ── CONFIGURATOR MODAL ──
-function openConfigModal() {
-  ["cfgZone","cfgSeverity","cfgType"].forEach(id => $(id).value = "");
-  $("cfgSeverity").classList.remove("sev-high","sev-medium","sev-low");
-  $("configModal").classList.add("active");
-}
-function closeConfigModal() { $("configModal").classList.remove("active"); }
+  // Bump animation helper
+  function bump(el, newVal) {
+    el.textContent = newVal;
+    el.classList.remove('count-bump');
+    void el.offsetWidth; // reflow to restart animation
+    el.classList.add('count-bump');
+    setTimeout(() => el.classList.remove('count-bump'), 400);
+  }
 
-$("openConfigBtn").addEventListener("click", openConfigModal);
-$("configClose").addEventListener("click", closeConfigModal);
-$("configCancel").addEventListener("click", closeConfigModal);
-$("configModal").addEventListener("click", e => { if (e.target === $("configModal")) closeConfigModal(); });
+  const prevR = parseInt(relaxedEl.textContent) || 0;
+  const prevD = parseInt(drowsyEl.textContent)  || 0;
 
-$("configFireBtn").addEventListener("click", () => {
-  const zone    = $("cfgZone").value    || ZONES[Math.floor(Math.random()*ZONES.length)];
-  const typeKey = $("cfgType").value    || TYPE_KEYS[Math.floor(Math.random()*TYPE_KEYS.length)];
-  const severity= $("cfgSeverity").value|| null;
-  const routes  = null;
-  closeConfigModal();
-  setTimeout(() => fireAlert({ zone, typeKey, severity, routes }), 150);
-});
-
-// ── FIRE ALERT ──
-function fireAlert({ zone, typeKey, severity, routes } = {}) {
-  const tk  = typeKey || TYPE_KEYS[Math.floor(Math.random()*TYPE_KEYS.length)];
-  const tpl = TYPE_MAP[tk];
-  const z   = zone     || ZONES[Math.floor(Math.random()*ZONES.length)];
-  const sev = severity || tpl.severity;
-  const rt  = routes   || tpl.routes;
-  const alert = { id:`demo-${Date.now()}`, type:tk, title:tpl.title, zone:z, severity:sev, routed_to:rt, timestamp:new Date().toISOString() };
-  state.alerts  = [alert,...state.alerts].slice(0,12);
-  state.history = [alert,...state.history].slice(0,50);
-  renderAll(state.alerts);
-  renderHistory();
-  setTimeout(() => openDetailModal(alert), 80);
-  setTimeout(() => {
-    const first = $("alertList").querySelector(".alert-card");
-    if (first) { first.classList.add("pulse"); setTimeout(()=>first.classList.remove("pulse"),2200); }
-  }, 60);
+  if (state.counts.relaxed !== prevR) bump(relaxedEl, state.counts.relaxed);
+  if (state.counts.drowsy  !== prevD) bump(drowsyEl,  state.counts.drowsy);
 }
 
-// ── HISTORY DROPDOWN ──
+// ── Record detection into history & increment counters ──
+function recordDetection(alert) {
+  // Avoid double-counting the same ID
+  if (state.seenIds.has(alert.id)) return;
+  state.seenIds.add(alert.id);
+
+  // Increment appropriate counter
+  if (alert.type === 'relaxed') state.counts.relaxed++;
+  if (alert.type === 'drowsy')  state.counts.drowsy++;
+
+  // Push to history (deduplicated)
+  const alreadyInHistory = state.history.some(h => h.id === alert.id);
+  if (!alreadyInHistory) {
+    state.history = [alert, ...state.history].slice(0, 50);
+    renderHistory();
+  }
+
+  updateCounters();
+}
+
+// ── DROPDOWN / HISTORY ──
 function positionDropdown(panelEl, triggerEl) {
   panelEl.classList.add("open");
   requestAnimationFrame(() => {
@@ -504,11 +814,17 @@ $("historyBtn").addEventListener("click", e => {
 
 function renderHistory() {
   $("historyCount").textContent = state.history.length;
-  if (!state.history.length) { $("historyList").innerHTML = `<div class="history-empty">No alerts recorded yet.</div>`; return; }
+  if (!state.history.length) {
+    $("historyList").innerHTML = `<div class="history-empty">No alerts recorded yet.</div>`;
+    return;
+  }
   $("historyList").innerHTML = state.history.map(a => `
     <div class="history-item" data-id="${a.id}">
       <div class="hi-bar ${a.severity}"></div>
-      <div class="hi-info"><div class="hi-title">${a.title}</div><div class="hi-meta">📍 ${a.zone} &nbsp;→ ${a.routed_to.join(", ")}</div></div>
+      <div class="hi-info">
+        <div class="hi-title">${a.title}</div>
+        <div class="hi-meta">📍 ${a.zone} &nbsp;→ ${a.routed_to.join(", ")}</div>
+      </div>
       <div class="hi-time">${fmt(a.timestamp)}</div>
     </div>`).join("");
   $("historyList").querySelectorAll(".history-item").forEach(item => {
@@ -539,14 +855,21 @@ function closeDetailModal() { $("alertModal").classList.remove("active"); curren
 $("modalClose").addEventListener("click", closeDetailModal);
 $("modalClose2").addEventListener("click", closeDetailModal);
 $("alertModal").addEventListener("click", e => { if (e.target === $("alertModal")) closeDetailModal(); });
-document.addEventListener("keydown", e => { if (e.key==="Escape") { closeDetailModal(); closeConfigModal(); } });
+document.addEventListener("keydown", e => { if (e.key==="Escape") closeDetailModal(); });
 $("modalAck").addEventListener("click", () => {
-  if (currentAlert) { state.alerts = state.alerts.filter(a=>a.id!==currentAlert.id); renderAll(state.alerts); closeDetailModal(); }
+  if (currentAlert) {
+    state.alerts = state.alerts.filter(a=>a.id!==currentAlert.id);
+    renderAll(state.alerts);
+    closeDetailModal();
+  }
 });
 
-// ── RENDER ──
+// ── RENDER ALERTS ──
 function renderAlerts(alerts) {
-  if (!alerts.length) { $("alertList").innerHTML = `<div class="empty-state"><strong>No active alerts</strong>Campus conditions are currently normal.</div>`; return; }
+  if (!alerts.length) {
+    $("alertList").innerHTML = `<div class="empty-state"><strong>No active alerts</strong>Detections from the camera feed will appear here automatically.</div>`;
+    return;
+  }
   $("alertList").innerHTML = alerts.map(a => `
     <article class="alert-card ${a.severity}" data-id="${a.id}" tabindex="0">
       <div class="ac-top"><span class="ac-title">${a.title}</span><span class="ac-time">${fmt(a.timestamp)}</span></div>
@@ -559,36 +882,19 @@ function renderAlerts(alerts) {
     card.addEventListener("keydown", e => { if(e.key==="Enter"||e.key===" ") open(); });
   });
 }
-function renderMetrics(alerts) {
-  $("metricTotal").textContent = alerts.length;
-  $("metricCritical").textContent = alerts.filter(a=>a.severity==="high").length;
-  $("metricZones").textContent = Math.max(5, new Set(alerts.map(a=>a.zone)).size);
-  $("activeCount").textContent = `${alerts.length} Active`;
-}
-function renderZones(alerts) {
-  const sev = new Map();
-  alerts.forEach(a => {
-    const cur = sev.get(a.zone)||"normal";
-    if (a.severity==="high") sev.set(a.zone,"critical");
-    else if (a.severity==="medium"&&cur!=="critical") sev.set(a.zone,"warn");
-    else if (!sev.has(a.zone)) sev.set(a.zone,"normal");
-  });
-  document.querySelectorAll(".zone-card").forEach(card => {
-    const status = sev.get(card.dataset.zone)||"normal";
-    card.classList.remove("warn","critical");
-    if(status==="warn") card.classList.add("warn");
-    if(status==="critical") card.classList.add("critical");
-    card.querySelector(".zone-status").innerHTML = status==="critical"?"🔴 Critical":status==="warn"?"🟡 Warning":"🟢 Normal";
-  });
-}
+
 function renderAll(alerts) {
-  renderAlerts(alerts); renderMetrics(alerts); renderZones(alerts);
+  renderAlerts(alerts);
+  $("activeCount").textContent = `${alerts.length} Active`;
   $("lastRefresh").textContent = `Updated ${new Date().toLocaleTimeString()}`;
 }
+
 function setConn(ok, fallback=false) {
   $("connBadge").classList.toggle("ok", ok);
-  $("connText").textContent = ok ? (fallback?"Demo Mode (Offline)":"Connected to Flask API") : "Disconnected";
+  $("connText").textContent = ok ? (fallback ? "Demo Mode (Offline)" : "Connected to Flask API") : "Disconnected";
 }
+
+// ── FETCH FROM API (auto-records detections) ──
 async function fetchAlerts() {
   try {
     const res = await fetch(`${API_BASE}/alerts`);
@@ -596,128 +902,141 @@ async function fetchAlerts() {
     const payload = await res.json();
     const raw = payload.alerts || payload;
     if (!Array.isArray(raw)) throw new Error();
-    state.alerts = raw.map((a,i) => ({
-      id: a.id||`a${i}-${Date.now()}`, type: a.type||"unknown", title: a.title||readable(a.type||"Alert"),
-      zone: a.zone||ZONES[0], severity: (a.severity||"low").toLowerCase(),
-      routed_to: Array.isArray(a.routed_to)?a.routed_to:["Security"], timestamp: a.timestamp||new Date().toISOString()
-    })).slice(0,12);
-    state.fallback=false; setConn(true,false); renderAll(state.alerts);
+
+    const normalized = raw.map((a,i) => ({
+      id:        a.id || `a${i}-${Date.now()}`,
+      type:      a.type || "unknown",
+      title:     a.title || readable(a.type || "Alert"),
+      zone:      a.zone || ZONES[0],
+      severity:  (a.severity || "low").toLowerCase(),
+      routed_to: Array.isArray(a.routed_to) ? a.routed_to : ["Security"],
+      timestamp: a.timestamp || new Date().toISOString()
+    })).slice(0, 12);
+
+    // Check for new alerts → record them
+    const prevFirst = state.alerts[0];
+    state.alerts = normalized;
+    state.fallback = false;
+    setConn(true, false);
+
+    // Record any new detections of relaxed or drowsy type
+    normalized.forEach(a => {
+      if (a.type === 'relaxed' || a.type === 'drowsy') {
+        recordDetection(a);
+      }
+    });
+
+    renderAll(state.alerts);
+
+    // Show popup if newest alert is new
+    const newFirst = state.alerts[0];
+    if (newFirst && (!prevFirst || newFirst.id !== prevFirst.id)) {
+      if (newFirst.id !== lastAlertId) {
+        lastAlertId = newFirst.id;
+        showPopup(newFirst);
+        if (newFirst.type === 'drowsy') showDrowsyBanner(newFirst.zone);
+        setTimeout(() => {
+          const card = $("alertList").querySelector(".alert-card");
+          if (card) { card.classList.add("pulse"); setTimeout(() => card.classList.remove("pulse"), 2200); }
+        }, 60);
+      }
+    }
+
   } catch {
-    if (!state.fallback) { state.fallback=true; setConn(true,true); }
+    if (!state.fallback) { state.fallback = true; setConn(true, true); }
     renderAll(state.alerts);
   }
 }
-navigator.mediaDevices.getUserMedia({ video: true })
-  .then(s => { $("camera").srcObject = s; })
-  .catch(() => { $("camera").style.display="none"; $("videoBox").insertAdjacentHTML("beforeend",`<p class="cam-unavail">Camera unavailable — allow browser permission or connect a webcam.</p>`); });
 
-renderHistory();
-fetchAlerts();
-setInterval(fetchAlerts, POLL_MS);
+function initCamera() {
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(s => { $("camera").srcObject = s; })
+    .catch(() => {
+      $("camera").style.display = "none";
+      $("videoBox").insertAdjacentHTML("beforeend", `<p class="cam-unavail">Camera unavailable — allow browser permission or connect a webcam.</p>`);
+    });
+}
 
-// ── LIVE ALERT POPUP ──────────────────────────────
+// ── LIVE ALERT POPUP ──
 let popupTimer = null;
 let popupCurrentAlert = null;
-const POPUP_DURATION = 6000; // auto-dismiss after 6 seconds
+let lastAlertId = null;
+const POPUP_DURATION = 6000;
 
 function showPopup(alert) {
   popupCurrentAlert = alert;
-
-  // Fill in content
   const sev = alert.severity || "medium";
-  document.getElementById("popupBadge").className = "popup-badge " + sev;
-  document.getElementById("popupSev").textContent = sev.toUpperCase();
-  document.getElementById("popupTitle").textContent = alert.title || readable(alert.type);
-  document.getElementById("popupZone").textContent = alert.zone_name || alert.zone;
-  document.getElementById("popupType").textContent = readable(alert.type);
-  document.getElementById("popupRoute").textContent = Array.isArray(alert.routed_to)
+  $("popupBadge").className = "popup-badge " + sev;
+  $("popupSev").textContent = sev.toUpperCase();
+  $("popupTitle").textContent = alert.title || readable(alert.type);
+  $("popupZone").textContent = alert.zone_name || alert.zone;
+  $("popupType").textContent = readable(alert.type);
+  $("popupRoute").textContent = Array.isArray(alert.routed_to)
     ? alert.routed_to.join(", ")
     : (alert.authority || "Security");
-
-  // Show popup
-  const popup = document.getElementById("alert-popup");
+  const popup = $("alert-popup");
   popup.classList.add("show");
-
-  // Progress bar countdown
-  const bar = document.getElementById("popupBar");
+  const bar = $("popupBar");
   bar.style.transition = "none";
   bar.style.width = "100%";
   setTimeout(() => {
     bar.style.transition = `width ${POPUP_DURATION}ms linear`;
     bar.style.width = "0%";
   }, 30);
-
-  // Auto dismiss
   clearTimeout(popupTimer);
   popupTimer = setTimeout(dismissPopup, POPUP_DURATION);
 }
 
 function dismissPopup() {
   clearTimeout(popupTimer);
-  document.getElementById("alert-popup").classList.remove("show");
+  $("alert-popup").classList.remove("show");
   popupCurrentAlert = null;
 }
 
-document.getElementById("popupClose").addEventListener("click", dismissPopup);
-
-document.getElementById("popupAck").addEventListener("click", () => {
+$("popupClose").addEventListener("click", dismissPopup);
+$("popupAck").addEventListener("click", () => {
   if (popupCurrentAlert) {
     state.alerts = state.alerts.filter(a => a.id !== popupCurrentAlert.id);
     renderAll(state.alerts);
   }
   dismissPopup();
 });
-
-document.getElementById("popupView").addEventListener("click", () => {
+$("popupView").addEventListener("click", () => {
   if (popupCurrentAlert) openDetailModal(popupCurrentAlert);
   dismissPopup();
 });
 
-// ── HOOK INTO fireAlert so popup shows on demo trigger too ──
-const _origFireAlert = fireAlert;
-window.fireAlert = function(opts) {
-  _origFireAlert(opts);
-  // Show popup for the latest alert added
-  setTimeout(() => {
-    if (state.alerts.length > 0) showPopup(state.alerts[0]);
-  }, 100);
-};
+// ── DROWSINESS BANNER ──
+let drowsyBannerTimer = null;
 
-// ── HOOK INTO fetchAlerts to show popup on real backend alerts ──
-const _origFetchAlerts = fetchAlerts;
-let lastAlertId = null;
-window.fetchAlerts = async function() {
-  const prevFirst = state.alerts[0];
-  await _origFetchAlerts();
-  const newFirst = state.alerts[0];
-  if (newFirst && (!prevFirst || newFirst.id !== prevFirst.id)) {
-    if (newFirst.id !== lastAlertId) {
-      lastAlertId = newFirst.id;
-      showPopup(newFirst);
-    }
-  }
-};
+function playBeep() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(520, ctx.currentTime);
+    gain.gain.setValueAtTime(0.18, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.9);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.9);
+  } catch(e) {}
+}
+
+function showDrowsyBanner(zone) {
+  $('drowsy-banner-msg').textContent = `Student showing signs of drowsiness in ${zone}`;
+  $('drowsy-banner').classList.add('show');
+  playBeep();
+  clearTimeout(drowsyBannerTimer);
+  drowsyBannerTimer = setTimeout(() => $('drowsy-banner').classList.remove('show'), 9000);
+}
+
+$('drowsy-banner-close').addEventListener('click', () => {
+  $('drowsy-banner').classList.remove('show');
+  clearTimeout(drowsyBannerTimer);
+});
 </script>
-<!-- Live Alert Popup -->
-<div id="alert-popup">
-  <div class="popup-top">
-    <div id="popupBadge" class="popup-badge high">
-      <span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block;"></span>
-      <span id="popupSev">HIGH</span>
-    </div>
-    <button class="popup-close" id="popupClose">✕</button>
-  </div>
-  <div class="popup-title" id="popupTitle">Alert</div>
-  <div class="popup-meta">
-    <span>📍 <span id="popupZone">—</span></span>
-    <span>🔍 <span id="popupType">—</span></span>
-  </div>
-  <div class="popup-route">→ Notifying: <strong id="popupRoute">—</strong></div>
-  <div class="popup-actions">
-    <button class="popup-btn-ack" id="popupAck">✓ Acknowledge</button>
-    <button class="popup-btn-view" id="popupView">View Details</button>
-  </div>
-  <div class="popup-progress"><div class="popup-progress-bar" id="popupBar"></div></div>
-</div>
 </body>
 </html>
