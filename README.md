@@ -74,10 +74,10 @@ Open in any browser on same WiFi:
 |--------|------|
 | Sidd | ML Lead — drowsiness detection, streaming |
 | Yashi | Backend — Flask API, SSE, alert routing |
-| Naivam | Frontend — dashboard UI, login page |
+| Naivam | Pitch deck, Shark Tank presentation |
 | Aaska | Frontend support — alert components |
 | Bhupendra | GitHub, README, demo video |
-| Meet | Pitch deck, Shark Tank presentation |
+| Meet | Frontend — dashboard UI, login page |
 
 ---
 
